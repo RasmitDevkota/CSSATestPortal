@@ -24,7 +24,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                 onClick = {
                     // Sign in
                     AppWindow(title = "Sign In to the CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(600, 600)).also {
-                        this.apply {  }
+
                     }.show {
                         Text("Authenticate")
                     }
