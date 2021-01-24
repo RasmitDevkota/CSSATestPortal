@@ -11,7 +11,7 @@ class authentication {
         con.setRequestProperty("Content-Type", "application/json; utf-8");
         con.setRequestProperty("Accept", "application/json");
         con.setDoOutput(true);
-        val jsonInputString = JSONObject("""{"name":"test name", "age":25}""")
+        val jsonInputString = Data("ok", "Hi Royce")
         con.outputStream.use { os ->
             val input: ByteArray = jsonInputString.getBytes("utf-8")
             os.write(input, 0, input.size)
