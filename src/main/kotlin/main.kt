@@ -99,7 +99,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                                     onClick = {
                                         // Authenticate...
-                                        authentication("Winkyoung", "mypassword")
+                                        print(authentication().getCredentials("Winkyoung", "mypassword"))
                                         authenticated = true
 
                                         AppManager.focusedWindow?.close()
