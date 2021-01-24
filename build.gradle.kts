@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
 }
 
 tasks.withType<KotlinCompile>() {
