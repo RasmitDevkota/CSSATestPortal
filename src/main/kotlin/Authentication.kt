@@ -5,8 +5,17 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class authentication() {
-    fun getCredentials(username: String, password: String): String {
+class Authentication() {
+    var email: String = ""
+    var username: String = ""
+    var password: String = ""
+    var profilePicUrl: String = ""
+    var accountAge: Int = 0
+
+    fun usernameSignIn(_username: String, _password: String): String {
+        username = _username
+        password = _password
+
         val url = URL("https://cssa-backend.herokuapp.com/check")
         val con = url.openConnection() as HttpURLConnection
 
@@ -42,7 +51,15 @@ class authentication() {
         }
     }
 
-    init {
+    fun usernameSignUp(_email: String, _username: String, _password: String): String {
+        email = _email
+        username = _username
+        password = _password
 
+        return ""
+    }
+
+    fun googleSignIn(params: Any): String {
+        return ""
     }
 }

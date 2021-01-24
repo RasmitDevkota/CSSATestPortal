@@ -1,12 +1,8 @@
 import androidx.compose.desktop.AppManager
-import androidx.compose.desktop.AppWindow
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,8 +10,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.input.pointer.pointerMoveFilter
-import androidx.compose.ui.res.loadVectorXmlResource
-import androidx.compose.ui.res.vectorXmlResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +17,10 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
+    var noUsername by remember {
+        mutableStateOf(false)
+    }
+
     var authenticated by remember {
         mutableStateOf(false)
     }
@@ -31,7 +29,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         mutableStateOf(false)
     }
 
-    var username = "ExampleUsername"
+    var auth = Authentication()
 
     MaterialTheme {
         if (authenticated) {
@@ -74,7 +72,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                     .fillMaxHeight()
                     .fillMaxWidth(if (expanded) 0.831f else 0.92f),
                     Arrangement.spacedBy(50.dp)) {
-                    Text(text = "Welcome, $username!", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+                    Text(text = "Welcome, ${auth.username}!", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
 
                     Column(Modifier
                         .fillMaxWidth(0.8f)
@@ -91,30 +89,124 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
             Column(Modifier.fillMaxSize(), Arrangement.spacedBy(5.dp)) {
 
                 Column(Modifier.fillMaxSize(), Arrangement.spacedBy(15.dp)) {
-                    Row(Modifier) {
 
+                    if (noUsername) {
+                        var username by remember {
+                            mutableStateOf("")
+                        }
+
+                        var email by remember {
+                            mutableStateOf("")
+                        }
+
+                        var password by remember {
+                            mutableStateOf("")
+                        }
+
+                        var confirmPassword by remember {
+                            mutableStateOf("")
+                        }
+
+                        Text("Username", Modifier.align(Alignment.CenterHorizontally))
+
+                        TextField(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            value = username,
+                            onValueChange = { username = it },
+                        )
+
+                        Text("Email", Modifier.align(Alignment.CenterHorizontally))
+
+                        TextField(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            value = email,
+                            onValueChange = { email = it },
+                        )
+
+                        Text("Password", Modifier.align(Alignment.CenterHorizontally))
+
+                        TextField(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            value = password,
+                            onValueChange = { password = it },
+                        )
+
+                        Text("Confirm Password", Modifier.align(Alignment.CenterHorizontally))
+
+                        TextField(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            value = confirmPassword,
+                            onValueChange = {
+                                confirmPassword = it
+
+                                if (confirmPassword != password) {
+                                    print("Passwords don't match!")
+                                }
+                            },
+                        )
+
+                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                            onClick = {
+                                auth.usernameSignIn(username, password)
+
+                                authenticated = true
+                            }) {
+                            Text("Sign Up")
+                        }
+
+                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                            onClick = {
+                                noUsername = false
+                            }) {
+                            Text("Already have an account? Sign in!")
+                        }
+                    } else {
+                        var username by remember {
+                            mutableStateOf("")
+                        }
+
+                        var password by remember {
+                            mutableStateOf("")
+                        }
+
+                        Text("Username", Modifier.align(Alignment.CenterHorizontally))
+
+                        TextField(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            value = username,
+                            onValueChange = { username = it },
+                        )
+
+                        Text("Password", Modifier.align(Alignment.CenterHorizontally))
+
+                        TextField(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            value = password,
+                            onValueChange = { password = it },
+                        )
+
+                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                            onClick = {
+                                auth.usernameSignIn("Username", "Password")
+
+                                authenticated = true
+                            }) {
+                            Text("Sign In")
+                        }
+
+                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                            onClick = {
+                                noUsername = true
+                            }) {
+                            Text("Don't have an account? Sign up!")
+                        }
                     }
-
-                    var thing = arrayListOf<Any>("thing", "otherthing")
 
                     Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                         onClick = {
-                            // Authenticate...
-                            authentication("Winkyoung", "mypassword")
-                            authenticated = true
-
-                            AppManager.focusedWindow?.close()
-                        }) {
-                        Text("Sign In")
-                    }
-
-                    Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = {
-                            // Authenticate...
+                            auth.googleSignIn("params")
 
                             authenticated = true
-
-                            AppManager.focusedWindow?.close()
                         }) {
                         Text("Google")
                     }
