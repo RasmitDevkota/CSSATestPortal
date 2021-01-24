@@ -89,72 +89,37 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
             }
         } else {
             Column(Modifier.fillMaxSize(), Arrangement.spacedBy(5.dp)) {
-                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = {
-                        AppWindow(title = "Sign In to the CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(600, 600)).also {
-                            //frontend
 
-                        }.show {
-                            Column(Modifier.fillMaxSize(), Arrangement.spacedBy(5.dp)) {
-                                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                                    onClick = {
-                                        // Authenticate...
-                                        authentication("Winkyoung", "mypassword")
-                                        authenticated = true
+                Column(Modifier.fillMaxSize(), Arrangement.spacedBy(15.dp)) {
+                    Row(Modifier) {
 
-                                        AppManager.focusedWindow?.close()
-                                    }) {
-                                    Text("Email")
-                                }
+                    }
 
-                                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                                    onClick = {
-                                        // Authenticate...
+                    var thing = arrayListOf<Any>("thing", "otherthing")
 
-                                        authenticated = true
+                    Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = {
+                            // Authenticate...
+                            authentication("Winkyoung", "mypassword")
+                            authenticated = true
 
-                                        AppManager.focusedWindow?.close()
-                                    }) {
-                                    Text("Google")
-                                }
-                            }
-                        }
-                    }) {
-                    Text("Sign In")
+                            AppManager.focusedWindow?.close()
+                        }) {
+                        Text("Sign In")
+                    }
+
+                    Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = {
+                            // Authenticate...
+
+                            authenticated = true
+
+                            AppManager.focusedWindow?.close()
+                        }) {
+                        Text("Google")
+                    }
                 }
 
-                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = {
-                        AppWindow(title = "Sign In to the CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(600, 600)).also {
-
-                        }.show {
-                            Column(Modifier.fillMaxSize(), Arrangement.spacedBy(5.dp)) {
-                                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                                    onClick = {
-                                        // Authenticate...
-
-                                        authenticated = true
-
-                                        AppManager.focusedWindow?.close()
-                                    }) {
-                                    Text("Email")
-                                }
-
-                                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                                    onClick = {
-                                        // Authenticate...
-
-                                        authenticated = true
-
-                                        AppManager.focusedWindow?.close()
-                                    }) {
-                                    Text("Google")
-                                }
-                            }
-                        }
-                    }) {
-                    Text("Sign Up")
-                }
             }
         }
     }
