@@ -19,6 +19,9 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("com.squareup.retrofit2:retrofit:2.6.1")
+    implementation("com.squareup.retrofit2:converter-gson:2.6.1")
+    implementation("com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0")
 }
 
 tasks.withType<KotlinCompile>() {
