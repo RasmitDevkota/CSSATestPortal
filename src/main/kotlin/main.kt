@@ -52,22 +52,22 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                         }
                     ),
                     Arrangement.spacedBy(30.dp)) {
-                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(3.0f), onClick = {
+                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
 
                     }) {
-                        Icon(imageVector = vectorXmlResource("home_icon.xml"))
+                        Icon(bitmap = imageFromResource("Home Icon.png"))
                     }
 
-                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(3.0f), onClick = {
+                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
 
                     }) {
-                        Icon(imageVector = vectorXmlResource("assignment_icon.xml"))
+                        Icon(bitmap = imageFromResource("Events Icon.png"))
                     }
 
-                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(3.0f), onClick = {
+                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
 
                     }) {
-                        Icon(imageVector = vectorXmlResource("settings_icon.xml"))
+                        Icon(bitmap = imageFromResource("Settings Icon.png"))
                     }
                 }
 
