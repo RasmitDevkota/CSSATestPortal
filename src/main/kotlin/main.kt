@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
-import authentication
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var authenticated by remember {
@@ -100,7 +99,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                                     onClick = {
                                         // Authenticate...
-                                        authentication()
+                                        authentication("Winkyoung", "mypassword")
                                         authenticated = true
 
                                         AppManager.focusedWindow?.close()

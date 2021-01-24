@@ -10,6 +10,8 @@ plugins {
 group = "alientech"
 version = "1.0"
 
+// Edit stuff later
+
 repositories {
     jcenter()
     mavenCentral()
@@ -32,7 +34,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 
             packageName = "CSSA Test Portal"
-            version = "0.1"
+            version = "0.2"
             description = "Test portal application for CSSA"
             copyright = "© 2020 CSSA. All rights reserved."
             vendor = "CSSA"
