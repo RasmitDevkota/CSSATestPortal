@@ -1,7 +1,11 @@
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+
 
 class authentication {
     init {
@@ -13,7 +17,7 @@ class authentication {
         con.setDoOutput(true);
         val jsonInputString = Data("ok", "Hi Royce")
         con.outputStream.use { os ->
-            val input: ByteArray = jsonInputString.getBytes("utf-8")
+            val input: ByteArray = (Json.encodeToString(jsonInputString)).toByteArray(Charsets.UTF_8)
             os.write(input, 0, input.size)
         }
         BufferedReader(
