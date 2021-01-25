@@ -194,7 +194,9 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             Text("Sign In")
                         }
 
-                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                        Button(modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .background(Color(0xFF, 0xFF, 0xFF)),
                             onClick = {
                                 noUsername = true
                             }) {
@@ -215,10 +217,6 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
             }
         }
     }
-}
-
-fun changeContent() {
-
 }
 
 private fun loadImageResource(path: String): BufferedImage {
