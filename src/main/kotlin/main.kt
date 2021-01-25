@@ -1,6 +1,7 @@
 import androidx.compose.desktop.AppManager
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -88,7 +89,11 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         } else {
             Column(Modifier.fillMaxSize(), Arrangement.spacedBy(5.dp)) {
 
-                Column(Modifier.fillMaxSize(), Arrangement.spacedBy(15.dp)) {
+                Column(Modifier
+                    .fillMaxWidth(0.4f)
+                    .fillMaxHeight(0.7f)
+                    .align(Alignment.CenterHorizontally)
+                    .background(Color(0x9a, 0x9a, 0x9a)), Arrangement.spacedBy(15.dp)) {
 
                     if (noUsername) {
                         var username by remember {
@@ -154,7 +159,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             Text("Sign Up")
                         }
 
-                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                        TextButton(modifier = Modifier.align(Alignment.CenterHorizontally),
                             onClick = {
                                 noUsername = false
                             }) {
@@ -194,15 +199,16 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             Text("Sign In")
                         }
 
-                        Button(modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .background(Color(0xFF, 0xFF, 0xFF)),
+                        TextButton(modifier = Modifier
+                            .align(Alignment.CenterHorizontally),
                             onClick = {
                                 noUsername = true
                             }) {
                             Text("Don't have an account? Sign up!")
                         }
                     }
+
+                    Divider(color = Color.Gray)
 
                     Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                         onClick = {
