@@ -3,6 +3,7 @@ import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,9 +12,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.input.pointer.pointerMoveFilter
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
@@ -89,135 +93,165 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         } else {
             Column(Modifier.fillMaxSize(), Arrangement.spacedBy(5.dp)) {
 
-                Column(Modifier
-                    .fillMaxWidth(0.4f)
-                    .fillMaxHeight(0.7f)
-                    .align(Alignment.CenterHorizontally)
-                    .background(Color(0x9a, 0x9a, 0x9a)), Arrangement.spacedBy(15.dp)) {
+                Row(Modifier.fillMaxSize().align(Alignment.CenterHorizontally)) {
 
-                    if (noUsername) {
-                        var username by remember {
-                            mutableStateOf("")
-                        }
+                    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("CSSA Test Portal", modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 30.dp), fontSize = 40.sp, textAlign = TextAlign.Right)
 
-                        var email by remember {
-                            mutableStateOf("")
-                        }
+                        Column(Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .background(Color(0xF0, 0xF0, 0xF0), RoundedCornerShape(8.dp))
+                            .border(3.dp, Color(33, 33, 33), RoundedCornerShape(8.dp))) {
 
-                        var password by remember {
-                            mutableStateOf("")
-                        }
+                            Column(Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(10.dp, 15.dp, 10.dp, 15.dp), Arrangement.spacedBy(15.dp)) {
 
-                        var confirmPassword by remember {
-                            mutableStateOf("")
-                        }
+                                if (noUsername) {
+                                    var username by remember {
+                                        mutableStateOf("")
+                                    }
 
-                        Text("Username", Modifier.align(Alignment.CenterHorizontally))
+                                    var email by remember {
+                                        mutableStateOf("")
+                                    }
 
-                        TextField(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            value = username,
-                            onValueChange = { username = it },
-                        )
+                                    var password by remember {
+                                        mutableStateOf("")
+                                    }
 
-                        Text("Email", Modifier.align(Alignment.CenterHorizontally))
+                                    var confirmPassword by remember {
+                                        mutableStateOf("")
+                                    }
 
-                        TextField(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            value = email,
-                            onValueChange = { email = it },
-                        )
+                                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                                        Column(Modifier.padding(0.dp, 0.dp, 0.dp, 15.dp)) {
+                                            Text("Username", textAlign = TextAlign.Left)
 
-                        Text("Password", Modifier.align(Alignment.CenterHorizontally))
+                                            TextField(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                value = username,
+                                                onValueChange = { username = it },
+                                            )
+                                        }
 
-                        TextField(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            value = password,
-                            onValueChange = { password = it },
-                        )
+                                        Column(Modifier.padding(15.dp, 0.dp, 0.dp, 0.dp)) {
+                                            Text("Email", textAlign = TextAlign.Left)
 
-                        Text("Confirm Password", Modifier.align(Alignment.CenterHorizontally))
+                                            TextField(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                value = email,
+                                                onValueChange = { email = it },
+                                            )
+                                        }
+                                    }
 
-                        TextField(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            value = confirmPassword,
-                            onValueChange = {
-                                confirmPassword = it
+                                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                                        Column(Modifier.padding(0.dp, 0.dp, 0.dp, 15.dp)) {
+                                            Text("Password", textAlign = TextAlign.Left)
 
-                                if (confirmPassword != password) {
-                                    print("Passwords don't match!")
+                                            TextField(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                value = password,
+                                                onValueChange = { password = it },
+                                            )
+                                        }
+
+                                        Column(Modifier.padding(15.dp, 0.dp, 0.dp, 0.dp)) {
+                                            Text("Confirm Password", textAlign = TextAlign.Left)
+
+                                            TextField(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                value = confirmPassword,
+                                                onValueChange = {
+                                                    confirmPassword = it
+                                                },
+                                            )
+                                        }
+
+                                        Column() {
+                                            Text(text = (if ((password == confirmPassword && confirmPassword != "") || confirmPassword == "") "" else "Passwords do not match!"), textAlign = TextAlign.Left, color = Color(188, 88, 88))
+                                        }
+                                    }
+
+                                    Row(Modifier.align(Alignment.CenterHorizontally)) {
+                                        Column() {
+                                            Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                onClick = {
+                                                    auth.usernameSignIn(username, password)
+
+                                                    authenticated = true
+                                                }) {
+                                                Text("Sign Up")
+                                            }
+
+                                            TextButton(modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                onClick = {
+                                                    noUsername = false
+                                                }) {
+                                                Text("Already have an account? Sign in!")
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    var username by remember {
+                                        mutableStateOf("")
+                                    }
+
+                                    var password by remember {
+                                        mutableStateOf("")
+                                    }
+
+                                    Text("Username", textAlign = TextAlign.Left)
+
+                                    TextField(
+                                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                                        value = username,
+                                        onValueChange = { username = it },
+                                    )
+
+                                    Text("Password", textAlign = TextAlign.Left)
+
+                                    TextField(
+                                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                                        value = password,
+                                        onValueChange = { password = it },
+                                    )
+
+                                    Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                                        onClick = {
+                                            auth.usernameSignIn("Username", "Password")
+
+                                            authenticated = true
+                                        }) {
+                                        Text("Sign In")
+                                    }
+
+                                    TextButton(modifier = Modifier
+                                        .align(Alignment.CenterHorizontally),
+                                        onClick = {
+                                            noUsername = true
+                                        }) {
+                                        Text("Don't have an account? Sign up!")
+                                    }
                                 }
-                            },
-                        )
 
-                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = {
-                                auth.usernameSignIn(username, password)
+                                Divider(color = Color.Gray, thickness = 2.dp, modifier = Modifier.width(250.dp).align(Alignment.CenterHorizontally))
 
-                                authenticated = true
-                            }) {
-                            Text("Sign Up")
-                        }
+                                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                                    onClick = {
+                                        auth.googleSignIn("params")
 
-                        TextButton(modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = {
-                                noUsername = false
-                            }) {
-                            Text("Already have an account? Sign in!")
-                        }
-                    } else {
-                        var username by remember {
-                            mutableStateOf("")
-                        }
+                                        authenticated = true
+                                    }) {
+                                    Text("Google")
+                                }
 
-                        var password by remember {
-                            mutableStateOf("")
-                        }
+                            }
 
-                        Text("Username", Modifier.align(Alignment.CenterHorizontally))
-
-                        TextField(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            value = username,
-                            onValueChange = { username = it },
-                        )
-
-                        Text("Password", Modifier.align(Alignment.CenterHorizontally))
-
-                        TextField(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            value = password,
-                            onValueChange = { password = it },
-                        )
-
-                        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = {
-                                auth.usernameSignIn("Username", "Password")
-
-                                authenticated = true
-                            }) {
-                            Text("Sign In")
-                        }
-
-                        TextButton(modifier = Modifier
-                            .align(Alignment.CenterHorizontally),
-                            onClick = {
-                                noUsername = true
-                            }) {
-                            Text("Don't have an account? Sign up!")
                         }
                     }
 
-                    Divider(color = Color.Gray)
-
-                    Button(modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = {
-                            auth.googleSignIn("params")
-
-                            authenticated = true
-                        }) {
-                        Text("Google")
-                    }
                 }
 
             }
