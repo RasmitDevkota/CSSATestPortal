@@ -21,7 +21,14 @@ import androidx.compose.ui.zIndex
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
-fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
+
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+import net.jemzart.jsonkraken.JsonKraken
+import net.jemzart.jsonkraken.JsonValue
+
+
+fun main() = Window(title = "CSSA Event Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
         mutableStateOf(false)
     }
@@ -220,7 +227,11 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                                         onClick = {
-                                            auth.usernameSignIn("Username", "Password")
+                                            val json: JsonValue = JsonKraken.deserialize(auth.usernameSignIn(username, password))
+                                            println(JsonKraken.serialize(json)) //prints: {"getting":{"started":"Hello World"}}
+                                            println(json["info"][0].cast<String>()) //prints: Hello World
+                                           // print(Json.decodeFromString<User>(auth.usernameSignIn(username, password)))
+                                            //print(JSONObject()))
 
                                             authenticated = true
                                         }) {
