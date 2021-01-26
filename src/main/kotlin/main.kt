@@ -29,6 +29,8 @@ import androidx.compose.ui.zIndex
 import org.w3c.dom.Text
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
+import net.jemzart.jsonkraken.JsonKraken
+import net.jemzart.jsonkraken.JsonValue
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
@@ -86,7 +88,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                     .fillMaxHeight()
                     .fillMaxWidth(if (expanded) 0.831f else 0.92f),
                     Arrangement.spacedBy(50.dp)) {
-                    Text(text = "Welcome, ${auth.username}!", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+                    Text(text = "Welcome, ${auth.fName}!", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
 
                     Column(Modifier
                         .fillMaxWidth(0.8f)
@@ -125,6 +127,14 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                         mutableStateOf("")
                                     }
 
+                                    var fName by remember {
+                                        mutableStateOf("")
+                                    }
+
+                                    var lName by remember {
+                                        mutableStateOf("")
+                                    }
+
                                     var password by remember {
                                         mutableStateOf("")
                                     }
@@ -151,6 +161,28 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                 modifier = Modifier.align(Alignment.CenterHorizontally),
                                                 value = email,
                                                 onValueChange = { email = it },
+                                            )
+                                        }
+                                    }
+
+                                    Row(Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 0.dp)) {
+                                        Column(Modifier.padding(0.dp, 0.dp, 0.dp, 15.dp)) {
+                                            Text("First Name", textAlign = TextAlign.Left)
+
+                                            TextField(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                value = fName,
+                                                onValueChange = { fName = it },
+                                            )
+                                        }
+
+                                        Column(Modifier.padding(15.dp, 0.dp, 0.dp, 0.dp)) {
+                                            Text("Last Name", textAlign = TextAlign.Left)
+
+                                            TextField(
+                                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                value = lName,
+                                                onValueChange = { lName = it },
                                             )
                                         }
                                     }
@@ -189,9 +221,19 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                         Column() {
                                             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                                 onClick = {
-                                                    auth.usernameSignIn(username, password)
-
-                                                    authenticated = true
+                                                    if(auth.checkUsername(username)) {
+                                                        if(auth.checkEmail(email)) {
+                                                            if(auth.createAccount(fName, lName, username, email, password)) {
+                                                                authenticated = true
+                                                            } else {
+                                                                print("Error in creating account")
+                                                            }
+                                                        } else {
+                                                            print("Email is already in use")
+                                                        }
+                                                    } else {
+                                                        print("Username is already in use")
+                                                    }
                                                 }) {
                                                 Text("Sign Up")
                                             }
@@ -231,9 +273,14 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                         onClick = {
-                                            auth.usernameSignIn("Username", "Password")
 
-                                            authenticated = true
+                                            if(auth.manualSignIn(username, password)) {
+                                                authenticated = true
+                                            } else {
+                                                print("Invalid Username or Password!");
+                                            }
+
+
                                         }) {
                                         Text("Sign In")
                                     }
@@ -250,7 +297,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                                     onClick = {
-                                        auth.googleSignIn("params")
+                                        //auth.googleSignIn("params")
 
                                         authenticated = true
                                     }) {
