@@ -30,14 +30,7 @@ import org.w3c.dom.Text
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
-
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import net.jemzart.jsonkraken.JsonKraken
-import net.jemzart.jsonkraken.JsonValue
-
-
-fun main() = Window(title = "CSSA Event Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
+fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
         mutableStateOf(false)
     }
@@ -238,11 +231,7 @@ fun main() = Window(title = "CSSA Event Portal", icon = loadImageResource("CSSA.
 
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                         onClick = {
-                                            val json: JsonValue = JsonKraken.deserialize(auth.usernameSignIn(username, password))
-                                            println(JsonKraken.serialize(json)) //prints: {"getting":{"started":"Hello World"}}
-                                            println(json["info"][0].cast<String>()) //prints: Hello World
-                                           // print(Json.decodeFromString<User>(auth.usernameSignIn(username, password)))
-                                            //print(JSONObject()))
+                                            auth.usernameSignIn("Username", "Password")
 
                                             authenticated = true
                                         }) {
