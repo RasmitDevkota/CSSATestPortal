@@ -46,7 +46,7 @@ class Authentication() {
             var responseLine: String?
             while (br.readLine().also { responseLine = it } != null) {
                 response.append(responseLine!!.trim { it <= ' ' })
-            }
+            } 
             return response.toString()
         }
     }
