@@ -23,7 +23,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
     implementation( "com.squareup.okhttp3:okhttp:3.8.1")
     implementation("net.jemzart:jsonkraken:2.0.0")
-    implementation("com.google.android.gms:play-services-auth:19.0.0")
+    implementation("com.google.api-client:google-api-client:1.30.10")
 }
 
 tasks.withType<KotlinCompile>() {

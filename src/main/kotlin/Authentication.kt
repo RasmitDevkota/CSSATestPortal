@@ -6,6 +6,30 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.io.OutputStream
+
+import java.io.IOException
+
+import com.sun.net.httpserver.HttpExchange
+
+import com.sun.net.httpserver.HttpHandler
+import com.sun.net.httpserver.HttpServer
+import java.lang.Exception
+
+import java.net.InetSocketAddress
+import java.util.Collections
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+
+import com.google.api.client.auth.oauth2.Credential
+
+
+
+
+
+
 
 class Authentication() {
     var email: String = ""
@@ -170,4 +194,45 @@ class Authentication() {
         }
     }
 
+    fun googleSignIn() {
+        val server: HttpServer = HttpServer.create(InetSocketAddress(8310), 0)
+        server.createContext("/", GoogleHttpHandler())
+        server.executor = null
+        server.start()
+    }
+
+    internal class GoogleHttpHandler : HttpHandler {
+        override fun handle(t: HttpExchange) {
+            var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com";
+            var clientSecret = "KZdxDA3r_gF18eCACoFUdapt";
+            var authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+            var tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
+            var userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo";
+            var redirectUri = "http://127.0.0.1:8310"
+
+            var authorizationString = "$authorizationEndpoint?response_type=code&scope=openid%20profile&redirect_uri=$redirectUri&client_id=$clientID"
+
+            val url = URL(authorizationString)
+
+            var response = "<html><body><p>Hello!</p></body></html>"
+
+            with(url.openConnection() as HttpURLConnection) {
+                requestMethod = "GET"
+
+                println("\nSent 'GET' request to URL : $url; Response Code : $responseCode")
+
+                inputStream.bufferedReader().use {
+                    it.lines().forEach { line ->
+
+                    }
+
+                    t.sendResponseHeaders(200, response.length.toLong())
+                    val os = t.responseBody
+                    os.write(response.toByteArray())
+                    os.close()
+                    print(response)
+                }
+            }
+        }
+    }
 }

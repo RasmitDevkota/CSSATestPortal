@@ -297,7 +297,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                                     onClick = {
-                                        //auth.googleSignIn("params")
+                                        auth.googleSignIn()
 
                                         authenticated = true
                                     }) {
