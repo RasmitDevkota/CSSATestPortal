@@ -208,13 +208,13 @@ class Authentication() {
             var authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
             var tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
             var userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo";
-            var redirectUri = "http://127.0.0.1:8310"
+            var redirectUri = "http://127.0.0.1:8310/"
 
             var authorizationString = "$authorizationEndpoint?response_type=code&scope=openid%20profile&redirect_uri=$redirectUri&client_id=$clientID"
 
             val url = URL(authorizationString)
 
-            var response = "<html><body><p>Hello!</p></body></html>"
+            var response = "<!DOCTYPE html><html>Loading<script>let url = new URL(window.location.href); let params = new URLSearchParams(url.search); window.location.href = \"http://localhost:8081/get-code/\" + params.get('code');</script></html>"
 
             with(url.openConnection() as HttpURLConnection) {
                 requestMethod = "GET"

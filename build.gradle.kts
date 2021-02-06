@@ -24,6 +24,8 @@ dependencies {
     implementation( "com.squareup.okhttp3:okhttp:3.8.1")
     implementation("net.jemzart:jsonkraken:2.0.0")
     implementation("com.google.api-client:google-api-client:1.30.10")
+    implementation ("io.ktor:ktor-websockets:1.5.1")
+    implementation ("com.fireflysource:firefly-kotlin-ext:4.9.5")
 }
 
 tasks.withType<KotlinCompile>() {
