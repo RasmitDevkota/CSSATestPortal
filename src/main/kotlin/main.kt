@@ -1,4 +1,3 @@
-import androidx.compose.desktop.AppManager
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,12 +11,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.input.pointer.pointerMoveFilter
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.*
-import androidx.compose.ui.text.platform.getFontPathAsString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -25,40 +22,15 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.firefly.codec.http2.model.HttpMethod
-import com.firefly.codec.oauth2.model.OAuth.HttpMethod.GET
-import com.firefly.kotlin.ext.common.firefly
 import com.firefly.kotlin.ext.http.HttpServer
-import com.firefly.kotlin.ext.http.asyncSubmit
 import kotlinx.coroutines.runBlocking
-import org.w3c.dom.Text
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
-import net.jemzart.jsonkraken.JsonKraken
-import net.jemzart.jsonkraken.JsonValue
-
-
-
+import java.awt.Desktop;
+import java.net.URI;
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
-    runBlocking {
-        val host = "localhost"
-        val port = 8081
-
-        HttpServer {
-            router {
-                httpMethod = HttpMethod.GET
-                path = "/get-code/4/:code"
-
-                asyncHandler {
-                    val codeId = getPathParameter("code")
-                    print("4/" + codeId) //Rasmit this is the code parameter and we GOT IT TO KOTLIN !!!
-                    end("Done")
-                }
-            }
-        }.listen(host, port)
-    }
     var noUsername by remember {
         mutableStateOf(false)
     }
@@ -300,7 +272,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                         onClick = {
 
-                                            if(auth.manualSignIn(username, password)) {
+                                            if (auth.manualSignIn(username, password)) {
                                                 authenticated = true
                                             } else {
                                                 print("Invalid Username or Password!");
@@ -323,7 +295,33 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally),
                                     onClick = {
-                                        auth.googleSignIn()
+                                        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                                            auth.googleHttpServer()
+
+                                            Desktop.getDesktop().browse(URI("https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&scope=openid%20profile&redirect_uri=http%3A%2F%2F127.0.0.1%3A8310%2F&client_id=834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com&flowName=GeneralOAuthFlow"));
+                                        }
+
+                                        runBlocking {
+                                            val host = "localhost"
+                                            val port = 8081
+
+                                            HttpServer {
+                                                router {
+                                                    httpMethod = HttpMethod.GET
+                                                    path = "/get-code/4/:code"
+
+                                                    asyncHandler {
+                                                        val codeId = getPathParameter("code")
+
+                                                        println(codeId)
+
+                                                        auth.googleSignIn("4/$codeId")
+
+                                                        end("Done")
+                                                    }
+                                                }
+                                            }.listen(host, port)
+                                        }
 
                                         authenticated = true
                                     }) {
