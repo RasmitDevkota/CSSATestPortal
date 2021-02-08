@@ -43,6 +43,10 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         mutableStateOf(false)
     }
 
+    var currentPage by remember {
+        mutableStateOf(0)
+    }
+
     var auth = Authentication()
 
     MaterialTheme() {
@@ -64,19 +68,19 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                     ),
                     Arrangement.spacedBy(30.dp)) {
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
-
+                        currentPage = 0
                     }) {
                         Icon(bitmap = imageFromResource("Home Icon.png"))
                     }
 
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
-
+                        currentPage = 1
                     }) {
                         Icon(bitmap = imageFromResource("Events Icon.png"))
                     }
 
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
-
+                        currentPage = 2
                     }) {
                         Icon(bitmap = imageFromResource("Settings Icon.png"))
                     }
@@ -86,16 +90,45 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                     .fillMaxHeight()
                     .fillMaxWidth(if (expanded) 0.831f else 0.92f),
                     Arrangement.spacedBy(50.dp)) {
-                    Text(text = "Welcome, ${auth.fName}!", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
 
-                    Column(Modifier
-                        .fillMaxWidth(0.8f)
-                        .fillMaxHeight(0.6f)
-                        .align(Alignment.CenterHorizontally)
-                        .background(Color(243, 243, 243))) {
-                        Text("Competition 1")
-                        Text("Competition 2")
-                        Text("Competition 3")
+                    when (currentPage) {
+                        0 -> { // Home Page
+
+                            Text(text = "Welcome, ${auth.username}!", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+
+                            Column(Modifier
+                                .fillMaxWidth(0.8f)
+                                .fillMaxHeight(0.6f)
+                                .align(Alignment.CenterHorizontally)
+                                .background(Color(243, 243, 243))) {
+                                Text("Competition 1")
+                                Text("Competition 2")
+                                Text("Competition 3")
+                            }
+
+                        }
+
+                        1 -> { // Competition Page
+
+                            Text(text = "My Competitions", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+
+                            Column(Modifier
+                                .fillMaxWidth(0.8f)
+                                .fillMaxHeight(0.6f)
+                                .align(Alignment.CenterHorizontally)
+                                .background(Color(243, 243, 243))) {
+                                Text("Competition 1")
+                                Text("Competition 2")
+                                Text("Competition 3")
+                            }
+
+                        }
+
+                        2 -> { // Settings Page
+
+                            Text(text = "Settings", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+
+                        }
                     }
                 }
             }

@@ -178,11 +178,11 @@ class Authentication() {
 
     fun googleSignIn(code: String) {
         with(URL("https://oauth2.googleapis.com/token?code=$code&client_id=$clientID&client_secret=$clientSecret&redirect_uri=$redirectUri&grant_type=authorization_code").openConnection() as HttpURLConnection) {
-            requestMethod = "POST";
-            doOutput = true;
+            requestMethod = "POST"
+            doOutput = true
 
-            setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            setRequestProperty("Content-Length", "0");
+            setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+            setRequestProperty("Content-Length", "0")
 
             println("\nSent '$requestMethod' request to URL : $url; Response Code : $responseCode ($responseMessage)")
 
