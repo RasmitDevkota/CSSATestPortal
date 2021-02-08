@@ -49,6 +49,7 @@ class Test {
 
     }
 
+    @Composable
     fun TestUI() {
         Column {
             questions.forEach {
@@ -57,8 +58,8 @@ class Test {
         }
     }
 
-    fun loadTestFromFirebase(_path: String) {
+    fun loadTestFromFirebase(_path: String): String {
 //        Firebase().Firestore().Document("tests/example")
-        var getUrl = "https://firestore.googleapis.com/v1beta1/projects/cssa-dev/databases/(default)/documents/$_path?key=AIzaSyAPTvz8weUBIMyjl6ekC1uegX-j4u2Z1sc";
+        return http.get("https://firestore.googleapis.com/v1beta1/projects/cssa-dev/databases/(default)/documents/tests/$_path?key=${firebase.apiKey}?access_token=${firebase.userToken}", token = firebase.userToken)
     }
 }

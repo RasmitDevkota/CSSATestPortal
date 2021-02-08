@@ -8,30 +8,56 @@ class Firebase {
     var appId = "1:921024173703:web:46f4a35d815964ddf44a22"
     var measurementId = "G-WBN11JNGTN"
 
-    var authUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=$apiKey"
-    var profileUpdateUrl = "tps://identitytoolkit.googleapis.com/v1/accounts:update?key=$apiKey"
-
     var http = HTTPRequests()
 
-    inner class Authentication(authType: String, credentials: ArrayList<Any>) {
-        init {
+    var uid = ""
+    var userToken = ""
+
+    inner class Authentication() {
+        fun authenticate(authType: String, credentials: ArrayList<Any>) {
             when (authType) {
-                "EmailPassword" -> {
-                    http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
+                "EmailPasswordSignIn" -> {
+                    var signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
                         {
                             "email": "${credentials[0]}",
                             "password": "${credentials[1]}",
                             "returnSecureToken": true
                         }
                     """.trimIndent())
+
+                    var localIdSubstring = signInResponse.substring(signInResponse.indexOf("\"localId\": \"") + 12)
+                    uid = localIdSubstring.substring(0, localIdSubstring.indexOf("\""))
+
+                    var idTokenSubstring = signInResponse.substring(signInResponse.indexOf("\"idToken\": \"") + 12)
+                    userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
+
+                    println("$uid, $userToken")
+                }
+
+                "EmailPasswordSignUp" -> {
+                    var signUpResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey", data = """
+                        {
+                            "email": "${credentials[0]}",
+                            "password": "${credentials[1]}",
+                            "returnSecureToken": true
+                        }
+                    """.trimIndent())
+
+                    var localIdSubstring = signUpResponse.substring(signUpResponse.indexOf("\"localId\": \"") + 12)
+                    uid = localIdSubstring.substring(0, localIdSubstring.indexOf("\""))
+
+                    var idTokenSubstring = signUpResponse.substring(signUpResponse.indexOf("\"idToken\": \"") + 12)
+                    userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
+
+                    println("$uid, $userToken")
                 }
             }
         }
     }
 
     inner class Firestore {
-        fun get(path: String): HashMap<String, Any> {
-            var getUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey";
+        fun get(_path: String): HashMap<String, Any> {
+            println(http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey?access_token=$userToken", token = userToken));
 
             return hashMapOf()
         }

@@ -40,6 +40,7 @@ class Authentication() {
             }
             """.trimIndent()
 
+        firebaseAuth.authenticate("EmailPasswordSignIn", arrayListOf(username, password))
 
         con.outputStream.use { os ->
             val input: ByteArray = data.toByteArray()
@@ -52,18 +53,20 @@ class Authentication() {
         ).use { br ->
             val response = StringBuilder()
             var responseLine: String?
+
             while (br.readLine().also { responseLine = it } != null) {
                 response.append(responseLine!!.trim { it <= ' ' })
             }
-            if(response.toString() == "false") {
-                return false;
+
+            return if (response.toString() == "false") {
+                false;
             } else {
                 val json: JsonValue = JsonKraken.deserialize(response.toString())
                 email = json["info"][0].cast<String>()
                 username = json["info"][1].cast<String>()
                 fName = json["info"][2].cast<String>()
                 lName = json["info"][3].cast<String>()
-                return true;
+                true;
             }
         }
     }
@@ -158,6 +161,7 @@ class Authentication() {
             }
             """.trimIndent()
 
+        firebaseAuth.authenticate("EmailPasswordSignUp", arrayListOf(username, password))
 
         con.outputStream.use { os ->
             val input: ByteArray = data.toByteArray()

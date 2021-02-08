@@ -30,6 +30,11 @@ import javax.imageio.ImageIO
 import java.awt.Desktop;
 import java.net.URI;
 
+var auth = Authentication()
+var firebase = Firebase()
+var firebaseAuth = firebase.Authentication()
+var firestore = firebase.Firestore()
+
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
         mutableStateOf(false)
@@ -46,8 +51,6 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
     var currentPage by remember {
         mutableStateOf(0)
     }
-
-    var auth = Authentication()
 
     MaterialTheme() {
         if (authenticated) {
@@ -117,9 +120,29 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .fillMaxHeight(0.6f)
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
-                                Text("Competition 1")
-                                Text("Competition 2")
-                                Text("Competition 3")
+                                TextButton(onClick = {
+                                    currentPage = 3
+                                }) {
+                                    Text("Event 1")
+                                }
+
+                                TextButton(onClick = {
+                                    currentPage = 3
+                                }) {
+                                    Text("Event 2")
+                                }
+
+                                TextButton(onClick = {
+                                    currentPage = 3
+                                }) {
+                                    Text("Event 3")
+                                }
+
+                                TextButton(onClick = {
+                                    currentPage = 3
+                                }) {
+                                    Text("Event 4")
+                                }
                             }
 
                         }
@@ -127,6 +150,12 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                         2 -> { // Settings Page
 
                             Text(text = "Settings", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+
+                        }
+
+                        3 -> {
+
+//                            Text(text = Test().loadTestFromFirebase("example"))
 
                         }
                     }
