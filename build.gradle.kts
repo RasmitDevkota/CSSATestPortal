@@ -5,12 +5,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.4.20"
     id("org.jetbrains.compose") version "0.2.0-build132"
+    kotlin("plugin.serialization") version "1.4.30"
 }
 
 group = "alientech"
 version = "1.0"
-
-// Edit stuff later
 
 repositories {
     jcenter()
@@ -21,11 +20,11 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
-    implementation( "com.squareup.okhttp3:okhttp:3.8.1")
+    implementation("com.squareup.okhttp3:okhttp:3.8.1")
     implementation("net.jemzart:jsonkraken:2.0.0")
     implementation("com.google.api-client:google-api-client:1.30.10")
-    implementation ("io.ktor:ktor-websockets:1.5.1")
-    implementation ("com.fireflysource:firefly-kotlin-ext:4.9.5")
+    implementation("io.ktor:ktor-websockets:1.5.1")
+    implementation("com.fireflysource:firefly-kotlin-ext:4.9.5")
 }
 
 tasks.withType<KotlinCompile>() {

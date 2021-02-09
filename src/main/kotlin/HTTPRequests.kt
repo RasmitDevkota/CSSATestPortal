@@ -1,12 +1,11 @@
 import java.net.HttpURLConnection
 import java.net.URL
-import java.io.OutputStream
-import java.nio.charset.StandardCharsets
-
 
 class HTTPRequests {
-    fun get(url: String, token: String = ""): String {
+    fun get(_url: String, token: String = ""): String {
         var response = ""
+
+        var url = _url.replace(" ", "%20")
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "GET"
@@ -16,9 +15,7 @@ class HTTPRequests {
                 setRequestProperty("Authorization", "Bearer $token")
             }
 
-            setRequestProperty("Content-Length", "0")
-
-            println("\nSent '$requestMethod' request to URL : $url; Response Code : $responseCode ($responseMessage)")
+            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->
@@ -32,8 +29,10 @@ class HTTPRequests {
         return response
     }
 
-    fun post(url: String, data: String = "", token: String = ""): String {
+    fun post(_url: String, data: String = "", token: String = ""): String {
         var response = ""
+
+        var url = _url.replace(" ", "%20")
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"
@@ -51,7 +50,7 @@ class HTTPRequests {
                 stream.write(out)
             }
 
-            println("Sent '$requestMethod' request to URL : $url; Response Code : $responseCode ($responseMessage)")
+            println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->
@@ -65,14 +64,16 @@ class HTTPRequests {
         return response
     }
 
-    fun delete(url: String): String {
+    fun delete(_url: String): String {
         var response = ""
+
+        var url = _url.replace(" ", "%20")
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "DELETE"
             doOutput = true
 
-            println("\nSent '$requestMethod' request to URL : $url; Response Code : $responseCode ($responseMessage)")
+            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->

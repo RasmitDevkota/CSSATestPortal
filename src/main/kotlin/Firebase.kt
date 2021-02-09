@@ -19,8 +19,8 @@ class Firebase {
                 "EmailPasswordSignIn" -> {
                     var signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
                         {
-                            "email": "${credentials[0]}",
-                            "password": "${credentials[1]}",
+                            "email": "rdatch101@gmail.com",
+                            "password": "Jangwonyoung1!",
                             "returnSecureToken": true
                         }
                     """.trimIndent())
@@ -30,8 +30,6 @@ class Firebase {
 
                     var idTokenSubstring = signInResponse.substring(signInResponse.indexOf("\"idToken\": \"") + 12)
                     userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
-
-                    println("$uid, $userToken")
                 }
 
                 "EmailPasswordSignUp" -> {
@@ -48,18 +46,14 @@ class Firebase {
 
                     var idTokenSubstring = signUpResponse.substring(signUpResponse.indexOf("\"idToken\": \"") + 12)
                     userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
-
-                    println("$uid, $userToken")
                 }
             }
         }
     }
 
     inner class Firestore {
-        fun get(_path: String): HashMap<String, Any> {
-            println(http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey?access_token=$userToken", token = userToken));
-
-            return hashMapOf()
+        fun get(_path: String): String {
+            return http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey&access_token=$userToken", token = userToken)
         }
 
         inner class Collection(_path: String, _parent: Collection? = null) {
@@ -89,7 +83,7 @@ class Firebase {
             }
 
             fun list(_path: String) {
-                var listUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey";
+                var listUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey"
             }
         }
 
@@ -98,10 +92,9 @@ class Firebase {
             var path = ""
             lateinit var parent: Collection
 
-            var data = hashMapOf<String, Any>()
-                get() {
-                    return get(path)
-                }
+            fun get(): String {
+                return http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey&access_token=$userToken", token = userToken)
+            }
 
             constructor(_path: String, _parent: Collection) : this() {
                 parent = _parent
@@ -116,7 +109,7 @@ class Firebase {
             }
 
             fun create(_data: String) {
-                var createUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path/placeholder/..?documentId=$name&key=$apiKey";
+                var createUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path/placeholder/..?documentId=$name&key=$apiKey"
             }
 
             fun update(_data: String) {
@@ -124,7 +117,7 @@ class Firebase {
             }
 
             fun delete() {
-                var deleteUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey";
+                var deleteUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey"
                 parent.deleteDocument(path)
             }
 
@@ -132,5 +125,29 @@ class Firebase {
                 return Collection("$path/$_path")
             }
         }
+
     }
+
+//    @Serializable
+//    data class DocumentModel(
+//        val type: String = "Default",
+//        val name: String = "",
+//        val fields: FieldsModel = FieldsModel(),
+//        val createTime: String = "",
+//        val updateTime: String = ""
+//    )
+//
+//    @Serializable
+//    data class FieldsModel(
+//        // User Fields
+//        val event1: String = "",
+//        val event2: String = "",
+//        val event3: String = "",
+//        val event4: String = "",
+//        val role: String = "",
+//
+//        // Test Fields
+//        val event: String = "",
+//        val competition: String = "",
+//    )
 }

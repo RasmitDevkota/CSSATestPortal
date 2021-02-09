@@ -27,13 +27,14 @@ import com.firefly.kotlin.ext.http.HttpServer
 import kotlinx.coroutines.runBlocking
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
-import java.awt.Desktop;
-import java.net.URI;
+import java.awt.Desktop
+import java.net.URI
 
 var auth = Authentication()
 var firebase = Firebase()
 var firebaseAuth = firebase.Authentication()
 var firestore = firebase.Firestore()
+var tests = hashMapOf<String, Test>()
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
@@ -44,31 +45,25 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         mutableStateOf(false)
     }
 
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-
     var currentPage by remember {
         mutableStateOf(0)
     }
 
-    MaterialTheme() {
+    var test by remember {
+        mutableStateOf("")
+    }
+
+    var questions by remember {
+        mutableStateOf(arrayListOf<Any>())
+    }
+
+    MaterialTheme {
         if (authenticated) {
             Row {
                 Column(Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(if (expanded) 0.169f else 0.08f)
-                    .background(Color(66, 133, 244))
-                    .pointerMoveFilter(
-                        onEnter = {
-                            expanded = true
-                            false
-                        },
-                        onExit = {
-                            expanded = false
-                            false
-                        }
-                    ),
+                    .fillMaxWidth(0.07f)
+                    .background(Color(66, 133, 244)),
                     Arrangement.spacedBy(30.dp)) {
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
                         currentPage = 0
@@ -91,7 +86,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                 Column(Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(if (expanded) 0.831f else 0.92f),
+                    .fillMaxWidth(0.92f),
                     Arrangement.spacedBy(50.dp)) {
 
                     when (currentPage) {
@@ -104,9 +99,25 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .fillMaxHeight(0.6f)
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
-                                Text("Competition 1")
-                                Text("Competition 2")
-                                Text("Competition 3")
+
+                                if (tests.size == 0) {
+                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
+                                    eventSequence.forEach {
+                                        tests[it.value] = Test()
+                                        tests[it.value]!!.loadTestFromFirebase(it.value)
+                                    }
+                                }
+
+                                tests.forEach { (event, _) ->
+                                    TextButton(onClick = {
+                                        currentPage = 3
+                                        test = event
+                                    }) {
+                                        Text(event)
+                                    }
+                                }
+
                             }
 
                         }
@@ -120,29 +131,25 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .fillMaxHeight(0.6f)
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
-                                TextButton(onClick = {
-                                    currentPage = 3
-                                }) {
-                                    Text("Event 1")
+
+                                if (tests.size == 0) {
+                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
+                                    eventSequence.forEach {
+                                        tests[it.value] = Test()
+                                        tests[it.value]!!.loadTestFromFirebase(it.value)
+                                    }
                                 }
 
-                                TextButton(onClick = {
-                                    currentPage = 3
-                                }) {
-                                    Text("Event 2")
+                                tests.forEach { (event, _) ->
+                                    TextButton(onClick = {
+                                        currentPage = 3
+                                        test = event
+                                    }) {
+                                        Text(event)
+                                    }
                                 }
 
-                                TextButton(onClick = {
-                                    currentPage = 3
-                                }) {
-                                    Text("Event 3")
-                                }
-
-                                TextButton(onClick = {
-                                    currentPage = 3
-                                }) {
-                                    Text("Event 4")
-                                }
                             }
 
                         }
@@ -153,9 +160,19 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                         }
 
-                        3 -> {
+                        3 -> { // Test-Taking Page
 
-//                            Text(text = Test().loadTestFromFirebase("example"))
+                            Text(text = test, Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+
+                            Column(Modifier
+                                .fillMaxWidth(0.8f)
+                                .fillMaxHeight(0.6f)
+                                .align(Alignment.CenterHorizontally)
+                                .background(Color(243, 243, 243))) {
+
+                                tests[test]!!.TestUI()
+
+                            }
 
                         }
                     }
@@ -401,8 +418,6 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         }
     }
 }
-
-
 
 private fun loadImageResource(path: String): BufferedImage {
     val resource = Thread.currentThread().contextClassLoader.getResource(path)

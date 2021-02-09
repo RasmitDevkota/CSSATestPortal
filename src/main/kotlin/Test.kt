@@ -9,57 +9,123 @@ class Test {
     var http = HTTPRequests()
 
     interface Question {
+        val number: Int
+            get() = 0
+
         val type: String
             get() = "Default"
 
-        fun QuestionUI() {
+        val text: String
+            get() = ""
+
+        val image: String
+            get() = ""
+
+        val points: Int
+            get() = 5
+
+        val tiebreaker: Boolean
+            get() = false
+
+        fun answer(_answer: String) {
+
+        }
+
+        @Composable
+        fun UI() {
 
         }
     }
 
     // Multiple Choice Question
-    class MCQ : Question {
-        override fun QuestionUI() {
-            super.QuestionUI()
+    class MCQ (
+        override val number: Int,
+        override val type: String,
+        override val text: String,
+        override val image: String,
+        override val points: Int,
+        override val tiebreaker: Boolean,
+        val options: ArrayList<String>
+    ) : Question {
+        @Composable
+        override fun UI() {
+            super.UI()
         }
     }
 
     // Multiple Select Question
-    class MSQ : Question {
+    class MSQ (
+        override val number: Int,
+        override val type: String,
+        override val text: String,
+        override val image: String,
+        override val points: Int,
+        override val tiebreaker: Boolean,
+        val options: ArrayList<String>
+    ) : Question {
 
     }
 
     // Fill-In-The-Blank
-    class FITB : Question {
+    class FITB (
+        override val number: Int,
+        override val type: String,
+        override val text: String,
+        override val image: String,
+        override val points: Int,
+        override val tiebreaker: Boolean
+    ) : Question {
 
     }
 
     // Short Response Question
-    class SRQ : Question {
+    class SRQ (
+        override val number: Int,
+        override val type: String,
+        override val text: String,
+        override val image: String,
+        override val points: Int,
+        override val tiebreaker: Boolean
+    ) : Question {
 
     }
 
     // Long Response Question
-    class LRQ : Question {
+    class LRQ (
+        override val number: Int,
+        override val type: String,
+        override val text: String,
+        override val image: String,
+        override val points: Int,
+        override val tiebreaker: Boolean
+    ) : Question {
 
     }
 
     // Matching Question
-    class MQ : Question {
+    class MQ (
+        override val number: Int,
+        override val type: String,
+        override val text: String,
+        override val image: String,
+        override val points: Int,
+        override val tiebreaker: Boolean,
+        val optionsA: ArrayList<String>,
+        val optionsB: ArrayList<String>
+    ) : Question {
 
     }
 
     @Composable
-    fun TestUI() {
+    fun UI() {
         Column {
             questions.forEach {
-                it.QuestionUI()
+                it.UI()
             }
         }
     }
 
     fun loadTestFromFirebase(_path: String): String {
-//        Firebase().Firestore().Document("tests/example")
-        return http.get("https://firestore.googleapis.com/v1beta1/projects/cssa-dev/databases/(default)/documents/tests/$_path?key=${firebase.apiKey}?access_token=${firebase.userToken}", token = firebase.userToken)
+        return firestore.get("tests/$_path")
     }
 }
