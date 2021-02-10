@@ -14,18 +14,29 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class Test {
+class Test (_path: String) {
     var path = ""
 
-    var questions = arrayListOf<Question>()
+    var Questions = arrayListOf<Question>()
 
     var http = HTTPRequests()
 
-    lateinit var test: Firebase.Firestore.Document
-    lateinit var answerSheet: Firebase.Firestore.Document
+    var test: Firebase.Firestore.Document
+    var questions: Firebase.Firestore.Collection
+    var answerSheet: Firebase.Firestore.Document
+
+    var data = ""
 
     var active by remember {
         mutableStateOf(true)
+    }
+
+    init {
+        path = _path
+        test = firestore.Document("tests/$_path")
+        questions = firestore.Collection("tests/$_path/questions")
+        answerSheet = firestore.Document("users/${firebase.uid}")
+        data = test.data
     }
 
     interface Question {
@@ -59,7 +70,7 @@ class Test {
     }
 
     // Multiple Choice Question
-    class MCQ (
+    inner class MCQ (
         override val number: Int,
         override val type: String,
         override val text: String,
@@ -80,7 +91,7 @@ class Test {
                 GlobalScope.launch {
                     var lastAnswer = ""
 
-                    while (Test().active) {
+                    while (active) {
                         delay(90000)
 
                         if (selected != lastAnswer) {
@@ -114,7 +125,7 @@ class Test {
     }
 
     // Multiple Select Question
-    class MSQ (
+    inner class MSQ (
         override val number: Int,
         override val type: String,
         override val text: String,
@@ -155,7 +166,7 @@ class Test {
     }
 
     // Fill-In-The-Blank
-    class FITB (
+    inner class FITB (
         override val number: Int,
         override val type: String,
         override val text: String,
@@ -167,7 +178,7 @@ class Test {
     }
 
     // Short Response Question
-    class SRQ (
+    inner class SRQ (
         override val number: Int,
         override val type: String,
         override val text: String,
@@ -179,7 +190,7 @@ class Test {
     }
 
     // Long Response Question
-    class LRQ (
+    inner class LRQ (
         override val number: Int,
         override val type: String,
         override val text: String,
@@ -191,7 +202,7 @@ class Test {
     }
 
     // Matching Question
-    class MQ (
+    inner class MQ (
         override val number: Int,
         override val type: String,
         override val text: String,
@@ -254,16 +265,10 @@ class Test {
     @Composable
     fun UI() {
         Column {
-            questions.forEach {
+            Questions.forEach {
                 it.UI()
             }
         }
-    }
-
-    fun loadTestFromFirebase(_path: String): String {
-        test = firestore.Document("tests/$_path")
-        answerSheet = firestore.Document("users/${firebase.uid}")
-        return test.data
     }
 
     fun end() {

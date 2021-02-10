@@ -19,8 +19,8 @@ class Firebase {
                 "EmailPasswordSignIn" -> {
                     var signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
                         {
-                            "email": "rdatch101@gmail.com",
-                            "password": "Jangwonyoung1!",
+                            "email": "${credentials[0]}",
+                            "password": "${credentials[1]}",
                             "returnSecureToken": true
                         }
                     """.trimIndent())

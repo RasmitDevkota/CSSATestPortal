@@ -103,8 +103,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     val userDocResponse = firestore.get("users/${firebase.uid}")
                                     val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
                                     eventSequence.forEach {
-                                        tests[it.value] = Test()
-                                        tests[it.value]!!.loadTestFromFirebase(it.value)
+                                        tests[it.value] = Test(it.value)
                                     }
                                 }
 
@@ -135,8 +134,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     val userDocResponse = firestore.get("users/${firebase.uid}")
                                     val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
                                     eventSequence.forEach {
-                                        tests[it.value] = Test()
-                                        tests[it.value]!!.loadTestFromFirebase(it.value)
+                                        tests[it.value] = Test(it.value)
                                     }
                                 }
 
