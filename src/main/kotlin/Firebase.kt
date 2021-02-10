@@ -92,9 +92,15 @@ class Firebase {
             var path = ""
             lateinit var parent: Collection
 
-            fun get(): String {
-                return http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey&access_token=$userToken", token = userToken)
-            }
+            private var _data = ""
+            val data: String
+                get() {
+                    if (_data == "") {
+                        _data = firestore.get(path)
+                    }
+
+                    return _data
+                }
 
             constructor(_path: String, _parent: Collection) : this() {
                 parent = _parent
