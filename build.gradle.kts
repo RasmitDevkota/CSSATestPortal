@@ -26,6 +26,7 @@ dependencies {
     implementation("io.ktor:ktor-websockets:1.5.1")
     implementation("com.fireflysource:firefly-kotlin-ext:4.9.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("com.google.code.gson:gson:2.8.6")
 }
 
 tasks.withType<KotlinCompile>() {

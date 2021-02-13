@@ -15,7 +15,7 @@ class HTTPRequests {
                 setRequestProperty("Authorization", "Bearer $token")
             }
 
-            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+//            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->
@@ -50,7 +50,30 @@ class HTTPRequests {
                 stream.write(out)
             }
 
-            println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+//            println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+
+            inputStream.bufferedReader().use {
+                it.lines().forEach { line ->
+                    response += "$line\n"
+                }
+            }
+
+            disconnect()
+        }
+
+        return response
+    }
+
+    fun patch(_url: String): String {
+        var response = ""
+
+        var url = _url.replace(" ", "%20")
+
+        with(URL(url).openConnection() as HttpURLConnection) {
+            requestMethod = "PATCH"
+            doOutput = true
+
+//            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->
@@ -73,7 +96,7 @@ class HTTPRequests {
             requestMethod = "DELETE"
             doOutput = true
 
-            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+//            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->

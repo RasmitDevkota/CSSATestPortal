@@ -13,41 +13,23 @@ class Firebase {
     var uid = ""
     var userToken = ""
 
-    inner class Authentication() {
-        fun authenticate(authType: String, credentials: ArrayList<Any>) {
-            when (authType) {
-                "EmailPasswordSignIn" -> {
-                    var signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
-                        {
-                            "email": "${credentials[0]}",
-                            "password": "${credentials[1]}",
-                            "returnSecureToken": true
-                        }
-                    """.trimIndent())
-
-                    var localIdSubstring = signInResponse.substring(signInResponse.indexOf("\"localId\": \"") + 12)
-                    uid = localIdSubstring.substring(0, localIdSubstring.indexOf("\""))
-
-                    var idTokenSubstring = signInResponse.substring(signInResponse.indexOf("\"idToken\": \"") + 12)
-                    userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
+    inner class Authentication {
+        fun authenticate(email: String, password: String) {
+            val signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
+                {
+                    "email": "$email",
+                    "password": "$password",
+                    "returnSecureToken": true
                 }
+            """.trimIndent())
 
-                "EmailPasswordSignUp" -> {
-                    var signUpResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey", data = """
-                        {
-                            "email": "${credentials[0]}",
-                            "password": "${credentials[1]}",
-                            "returnSecureToken": true
-                        }
-                    """.trimIndent())
+            val localIdSubstring = signInResponse.substring(signInResponse.indexOf("\"localId\": \"") + 12)
+            uid = localIdSubstring.substring(0, localIdSubstring.indexOf("\""))
 
-                    var localIdSubstring = signUpResponse.substring(signUpResponse.indexOf("\"localId\": \"") + 12)
-                    uid = localIdSubstring.substring(0, localIdSubstring.indexOf("\""))
+            val idTokenSubstring = signInResponse.substring(signInResponse.indexOf("\"idToken\": \"") + 12)
+            userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
 
-                    var idTokenSubstring = signUpResponse.substring(signUpResponse.indexOf("\"idToken\": \"") + 12)
-                    userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
-                }
-            }
+            println("\n$uid\n")
         }
     }
 
@@ -82,8 +64,8 @@ class Firebase {
                 children.remove(_path)
             }
 
-            fun list(_path: String) {
-                var listUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey"
+            fun list(): String {
+                return http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey&access_token=$userToken", token = userToken)
             }
         }
 
@@ -133,27 +115,4 @@ class Firebase {
         }
 
     }
-
-//    @Serializable
-//    data class DocumentModel(
-//        val type: String = "Default",
-//        val name: String = "",
-//        val fields: FieldsModel = FieldsModel(),
-//        val createTime: String = "",
-//        val updateTime: String = ""
-//    )
-//
-//    @Serializable
-//    data class FieldsModel(
-//        // User Fields
-//        val event1: String = "",
-//        val event2: String = "",
-//        val event3: String = "",
-//        val event4: String = "",
-//        val role: String = "",
-//
-//        // Test Fields
-//        val event: String = "",
-//        val competition: String = "",
-//    )
 }

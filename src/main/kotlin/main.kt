@@ -162,10 +162,9 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             Text(text = test, Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
 
                             Column(Modifier
-                                .fillMaxWidth(0.8f)
-                                .fillMaxHeight(0.6f)
-                                .align(Alignment.CenterHorizontally)
-                                .background(Color(243, 243, 243))) {
+                                .fillMaxWidth(0.831f)
+                                .fillMaxHeight()
+                                .align(Alignment.CenterHorizontally)) {
 
                                 tests[test]!!.UI()
 
@@ -367,9 +366,9 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     }
                                 }
 
-                                Divider(color = Color.Gray, thickness = 2.dp, modifier = Modifier.width(250.dp).align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 10.dp))
+                                Divider(color = Color.Gray, thickness = 2.dp, modifier = Modifier.width(250.dp).align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 5.dp))
 
-                                Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+                                Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 5.dp),
                                     onClick = {
                                         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                                             auth.googleHttpServer()
