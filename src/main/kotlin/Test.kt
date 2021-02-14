@@ -6,24 +6,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.CoreTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.text.InternalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.awt.Desktop
+import java.net.URI
 
 class Test(_path: String) {
     var path = ""
@@ -60,8 +57,6 @@ class Test(_path: String) {
                 val dataType = Regex("""(?<=type=\{stringValue=)(mcq|msq|fitb|srq|lrq|mq)""").find(questionData)!!.value
 
                 println("\n$questionData\n")
-
-                println("$dataName, $dataType")
 
                 when (dataType) {
                     "mcq" -> {
@@ -221,7 +216,7 @@ class Test(_path: String) {
 
                 Column {
                     Row {
-                        Text("$number. $text ($points point${if (points > 1) "s" else ""})")
+                        QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
                     }
 
                     Column {
@@ -260,7 +255,7 @@ class Test(_path: String) {
             Row(Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp)) {
                 Column {
                     Row {
-                        androidx.compose.material.Text("$number. $text ($points point${if (points > 1) "s" else ""})")
+                        QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
                     }
 
                     Column {
@@ -320,15 +315,14 @@ class Test(_path: String) {
                 val half2 = text.substring(blankIndex + 6)
 
                 Column {
-                    Text("$number. Fill in the blank below. ($points point${if (points > 1) "s" else ""})")
+                    QuestionText("$number. Fill in the blank below. ($points point${if (points > 1) "s" else ""})")
 
                     Row {
                         Text(half1)
-                        CoreTextField(
+                        QuestionField(
                             modifier = Modifier
                                 .width(200.dp)
-                                .height(25.dp)
-                                .border(1.dp, Color.Black, RoundedCornerShape(2.dp)),
+                                .height(25.dp),
                             value = blankAnswer,
                             onValueChange = {
                                 if (it.text.length < 25) {
@@ -376,7 +370,7 @@ class Test(_path: String) {
             Row {
                 Column {
                     Row {
-                        Text("$number. $text ($points point${if (points > 1) "s" else ""})")
+                        QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
                     }
 
                     Column {
@@ -384,8 +378,8 @@ class Test(_path: String) {
                             mutableStateOf(TextFieldValue(""))
                         }
 
-                        CoreTextField(
-                            modifier = Modifier.width(519.dp).heightIn(100.dp).border(1.dp, Color.Black, RoundedCornerShape(2.dp)),
+                        QuestionField(
+                            modifier = Modifier.width(519.dp).heightIn(100.dp),
                             value = response,
                             onValueChange = {
                                 response = it
@@ -423,7 +417,7 @@ class Test(_path: String) {
             Row(Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp)) {
                 Column {
                     Row {
-                        Text("$number. $text ($points point${if (points > 1) "s" else ""})")
+                        QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
                     }
 
                     Row {
@@ -448,9 +442,8 @@ class Test(_path: String) {
                                     Row(Modifier
                                         .width(48.dp)
                                         .height(48.dp)
-                                        .padding(end = 5.dp)
-                                        .border(1.dp, Color.Black, RoundedCornerShape(2.dp)), Arrangement.Center) {
-                                        CoreTextField(
+                                        .padding(end = 10.dp), Arrangement.Center) {
+                                        QuestionField(
                                             modifier = Modifier
                                                 .width(50.dp)
                                                 .height(50.dp)
@@ -487,10 +480,10 @@ class Test(_path: String) {
                                 val index = count - 1
                                 val counter = count
 
-                                Row(Modifier.padding(vertical = 10.dp).fillMaxWidth().height(50.dp)) {
+                                Row(Modifier.padding(vertical = 10.dp).fillMaxWidth().height(48.dp)) {
                                     Text(text = "$count. $it",
                                         color = (if (answers.toString().contains(count.toString())) Color.Black else Color.DarkGray),
-                                        modifier = Modifier.padding(vertical = 10.dp),
+                                        modifier = Modifier.padding(vertical = 8.dp),
                                         style = TextStyle(fontSize = 22.sp))
                                 }
 
@@ -503,24 +496,35 @@ class Test(_path: String) {
         }
     }
 
+    val persistenceScope = GlobalScope
+    lateinit var persistenceJob: Job
+
     @Composable
     fun UI() {
         ScrollableColumn(scrollState = rememberScrollState(), modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(15.dp)) {
             Questions.forEach {
                 it.UI()
+
+                Divider(Modifier.fillMaxWidth())
+
                 println("Added UI for Question #${it.number}")
             }
         }
 
-        GlobalScope.launch {
+        persistenceJob = persistenceScope.launch {
             while (active) {
-                delay(90000)
-                saveAnswer()
+                println("Saving answers...")
+
+                saveAnswers()
+
+                delay(30000)
             }
+
+            println("Saved all answers!")
         }
     }
 
-    fun saveAnswer() {
+    fun saveAnswers() {
         var documentData = """
             {
                 "fields": {
@@ -544,7 +548,10 @@ class Test(_path: String) {
 
     fun end() {
         active = false
-        return GlobalScope.cancel()
+
+        runBlocking {
+            persistenceJob.join()
+        }
     }
 
 }

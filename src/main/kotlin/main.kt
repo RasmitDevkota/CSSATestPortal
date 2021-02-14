@@ -1,8 +1,10 @@
+import androidx.compose.desktop.AppWindow
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.CoreTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -10,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.ImeOptions
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -21,6 +25,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.firefly.codec.http2.model.HttpMethod
 import com.firefly.kotlin.ext.http.HttpServer
 import kotlinx.coroutines.runBlocking
@@ -28,6 +33,7 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.awt.Desktop
 import java.net.URI
+import kotlin.properties.Delegates
 
 var auth = Authentication()
 var firebase = Firebase()
@@ -61,10 +67,10 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
             Row {
                 Column(Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.07f)
+                    .fillMaxWidth(0.0831f)
                     .background(Color(66, 133, 244)),
                     Arrangement.spacedBy(30.dp)) {
-                    IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
+                    IconButton(modifier = Modifier.padding(top = 10.dp).align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
                         currentPage = 0
                     }) {
                         Icon(bitmap = imageFromResource("Home Icon.png"))
@@ -99,6 +105,8 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
 
+                                Text("First Mini-Competition", fontSize = 20.sp)
+
                                 if (tests.size == 0) {
                                     val userDocResponse = firestore.get("users/${firebase.uid}")
                                     val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
@@ -112,7 +120,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                         currentPage = 3
                                         test = event
                                     }) {
-                                        Text(event)
+                                        Text(event, color = Color.Black)
                                     }
                                 }
 
@@ -130,6 +138,8 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
 
+                                Text("First Mini-Competition", fontSize = 20.sp)
+
                                 if (tests.size == 0) {
                                     val userDocResponse = firestore.get("users/${firebase.uid}")
                                     val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
@@ -143,7 +153,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                         currentPage = 3
                                         test = event
                                     }) {
-                                        Text(event)
+                                        Text(event, color = Color.Black)
                                     }
                                 }
 
@@ -154,6 +164,15 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                         2 -> { // Settings Page
 
                             Text(text = "Settings", Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
+
+                            Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
+                                onClick = {
+                                    auth = Authentication()
+                                    authenticated = false
+                                }
+                            ) {
+                                Text("Sign Out")
+                            }
 
                         }
 
@@ -168,6 +187,18 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 tests[test]!!.UI()
 
+                            }
+
+                            Column() {
+                                Button(modifier = Modifier.align(Alignment.CenterHorizontally)
+                                    .padding(0.dp, 0.dp, 0.dp, 12.dp),
+                                    onClick = {
+//                                    tests[test]!!.saveAnswers()
+//
+//                                    tests[test]!!.end()
+                                    }) {
+                                    Text("Submit")
+                                }
                             }
 
                         }
@@ -285,26 +316,36 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     }
 
                                     if ((password != confirmPassword || confirmPassword == "") && confirmPassword != "") {
-                                        Row() {
+                                        Row {
                                             Text(text = "Passwords do not match!", textAlign = TextAlign.Left, color = Color(188, 88, 88))
                                         }
                                     }
 
                                     Row(Modifier.align(Alignment.CenterHorizontally)) {
-                                        Column() {
+                                        Column {
+                                            var signUpPopup by remember {
+                                                mutableStateOf(0)
+                                            }
+
                                             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                                 onClick = {
-                                                    if(auth.checkUsername(username)) {
-                                                        if(auth.checkEmail(email)) {
-                                                            if(auth.createAccount(fName, lName, username, email, password)) {
+                                                    if (auth.checkUsername(username)) {
+                                                        if (auth.checkEmail(email)) {
+                                                            if (auth.createAccount(fName, lName, username, email, password)) {
                                                                 authenticated = true
                                                             } else {
-                                                                print("Error in creating account")
+                                                                signUpPopup = 1
+
+                                                                print("Error creating account")
                                                             }
                                                         } else {
+                                                            signUpPopup = 2
+
                                                             print("Email is already in use")
                                                         }
                                                     } else {
+                                                        signUpPopup = 3
+
                                                         print("Username is already in use")
                                                     }
                                                 }) {
@@ -317,6 +358,45 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                 }) {
                                                 Text("Already have an account? Sign in!")
                                             }
+
+                                            when (signUpPopup) {
+                                                0 -> {
+
+                                                }
+
+                                                1 -> {
+                                                    Dialog(onDismissRequest = { signUpPopup = 0 }) {
+                                                        Text("Error creating account.")
+                                                        Button(
+                                                            onClick = { signUpPopup = 0 }
+                                                        ) {
+                                                            Text(text = "Ok")
+                                                        }
+                                                    }
+                                                }
+
+                                                2 -> {
+                                                    Dialog(onDismissRequest = { signUpPopup = 0 }) {
+                                                        Text("Email already in use!")
+                                                        Button(
+                                                            onClick = { signUpPopup = 0 }
+                                                        ) {
+                                                            Text(text = "Ok")
+                                                        }
+                                                    }
+                                                }
+
+                                                3 -> {
+                                                    Dialog(onDismissRequest = { signUpPopup = 0 }) {
+                                                        Text("Username already in use!")
+                                                        Button(
+                                                            onClick = { signUpPopup = 0 }
+                                                        ) {
+                                                            Text(text = "Ok")
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 } else {
@@ -326,6 +406,10 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                     var password by remember {
                                         mutableStateOf("")
+                                    }
+
+                                    var signInPopup by remember {
+                                        mutableStateOf(false)
                                     }
 
                                     Text("Username", textAlign = TextAlign.Left)
@@ -346,14 +430,13 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                         onClick = {
-
                                             if (auth.manualSignIn(username, password)) {
                                                 authenticated = true
                                             } else {
-                                                print("Invalid Username or Password!");
+                                                signInPopup = true
+
+                                                print("Invalid username or password");
                                             }
-
-
                                         }) {
                                         Text("Sign In")
                                     }
@@ -363,6 +446,17 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                             noUsername = true
                                         }) {
                                         Text("Don't have an account? Sign up!")
+                                    }
+
+                                    if (signInPopup) {
+                                        Dialog(onDismissRequest = { signInPopup = false }) {
+                                            Text("Error creating account.")
+                                            Button(
+                                                onClick = { signInPopup = false }
+                                            ) {
+                                                Text(text = "Ok")
+                                            }
+                                        }
                                     }
                                 }
 
@@ -459,4 +553,72 @@ fun Text(
         onTextLayout,
         style
     )
+}
+
+@Composable
+fun QuestionText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
+    fontWeight: FontWeight? = null,
+    fontFamily: FontFamily = fontFamily(androidx.compose.ui.text.platform.font("Quicksand", "Quicksand-Medium.ttf")),
+    letterSpacing: TextUnit = TextUnit.Unspecified,
+    textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    overflow: TextOverflow = TextOverflow.Clip,
+    softWrap: Boolean = true,
+    maxLines: Int = Int.MAX_VALUE,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
+    style: TextStyle = AmbientTextStyle.current
+) {
+    Text(
+        AnnotatedString(text),
+        modifier.padding(bottom = 10.dp),
+        color,
+        fontSize,
+        fontStyle,
+        fontWeight,
+        fontFamily,
+        letterSpacing,
+        textDecoration,
+        textAlign,
+        lineHeight,
+        overflow,
+        softWrap,
+        maxLines,
+        emptyMap(),
+        onTextLayout,
+        style
+    )
+}
+
+@InternalTextApi
+@Composable
+fun QuestionField(
+    value: TextFieldValue,
+    modifier: Modifier = Modifier,
+    onValueChange: (TextFieldValue) -> Unit,
+    textStyle: TextStyle = TextStyle.Default,
+    onImeActionPerformed: (ImeAction) -> Unit = {},
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
+    onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
+    cursorColor: Color = Color.Black,
+    softWrap: Boolean = true,
+    imeOptions: ImeOptions = ImeOptions.Default
+) {
+    CoreTextField(value,
+        modifier.border(1.dp, Color.Black, RoundedCornerShape(2.dp)),
+        onValueChange,
+        textStyle,
+        onImeActionPerformed,
+        visualTransformation,
+        onTextLayout,
+        onTextInputStarted,
+        cursorColor,
+        softWrap,
+        imeOptions)
 }
