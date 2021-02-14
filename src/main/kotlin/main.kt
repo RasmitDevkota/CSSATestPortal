@@ -28,18 +28,19 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.firefly.codec.http2.model.HttpMethod
 import com.firefly.kotlin.ext.http.HttpServer
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.awt.Desktop
 import java.net.URI
-import kotlin.properties.Delegates
 
 var auth = Authentication()
 var firebase = Firebase()
 var firebaseAuth = firebase.Authentication()
 var firestore = firebase.Firestore()
 var tests = hashMapOf<String, Test>()
+
+var deactivated = true
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
@@ -58,10 +59,6 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
         mutableStateOf("")
     }
 
-    var questions by remember {
-        mutableStateOf(arrayListOf<Any>())
-    }
-
     MaterialTheme {
         if (authenticated) {
             Row {
@@ -69,7 +66,8 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                     .fillMaxHeight()
                     .fillMaxWidth(0.0831f)
                     .background(Color(66, 133, 244)),
-                    Arrangement.spacedBy(30.dp)) {
+                    Arrangement.spacedBy(30.dp)
+                ) {
                     IconButton(modifier = Modifier.padding(top = 10.dp).align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
                         currentPage = 0
                     }) {
@@ -91,7 +89,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                 Column(Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.92f),
+                    .fillMaxWidth(),
                     Arrangement.spacedBy(50.dp)) {
 
                     when (currentPage) {
@@ -136,7 +134,8 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .fillMaxWidth(0.8f)
                                 .fillMaxHeight(0.6f)
                                 .align(Alignment.CenterHorizontally)
-                                .background(Color(243, 243, 243))) {
+                                .background(Color(243, 243, 243))
+                            ) {
 
                                 Text("First Mini-Competition", fontSize = 20.sp)
 
@@ -180,25 +179,32 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                             Text(text = test, Modifier.align(Alignment.CenterHorizontally), fontSize = 40.sp)
 
+                            val testUI = tests[test]!!.UI()
+
                             Column(Modifier
                                 .fillMaxWidth(0.831f)
-                                .fillMaxHeight()
-                                .align(Alignment.CenterHorizontally)) {
+                                .fillMaxHeight(0.9f)
+                                .align(Alignment.CenterHorizontally)
+                            ) {
 
-                                tests[test]!!.UI()
+                                testUI.load()
 
-                            }
+                                GlobalScope.launch {
+                                    while (!deactivated) {
+                                        delay(1500)
 
-                            Column() {
-                                Button(modifier = Modifier.align(Alignment.CenterHorizontally)
-                                    .padding(0.dp, 0.dp, 0.dp, 12.dp),
-                                    onClick = {
-//                                    tests[test]!!.saveAnswers()
-//
-//                                    tests[test]!!.end()
-                                    }) {
-                                    Text("Submit")
+                                        if (deactivated) {
+                                            delay(60000)
+
+                                            println("Returning to home screen...")
+
+                                            currentPage = 1
+
+                                            this.cancel()
+                                        }
+                                    }
                                 }
+
                             }
 
                         }

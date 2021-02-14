@@ -29,7 +29,7 @@ class Firebase {
             val idTokenSubstring = signInResponse.substring(signInResponse.indexOf("\"idToken\": \"") + 12)
             userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
 
-            println("\n$uid\n")
+            println("\n$uid\n$userToken\n")
         }
     }
 
@@ -51,12 +51,12 @@ class Firebase {
                 path = "${if (parent?.path != null) (parent?.path + "/") else ""}$_path"
             }
 
-            fun getDocument(_path: String): Document {
+            fun Document(_path: String): Document {
                 return if (children.contains(_path)) {
                     children[_path]!!
                 } else {
                     children[_path] = Document(_path, this)
-                    Document(_path, this)
+                    this@Firestore.Document(_path, this)
                 }
             }
 
@@ -100,8 +100,8 @@ class Firebase {
                 var createUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path/placeholder/..?documentId=$name&key=$apiKey"
             }
 
-            fun update(_data: String) {
-                var updateUrl = "https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?updateMask.fieldPaths=$_data&key=$apiKey"
+            fun update(_data: String): String {
+                return http.patch("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$path?key=$apiKey&access_token=$userToken", data = _data, token = userToken)
             }
 
             fun delete() {
@@ -109,8 +109,8 @@ class Firebase {
                 parent.deleteDocument(path)
             }
 
-            fun getCollection(_path: String): Collection {
-                return Collection("$path/$_path")
+            fun Collection(_path: String): Collection {
+                return this@Firestore.Collection("$path/$_path")
             }
         }
 

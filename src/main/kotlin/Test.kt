@@ -8,6 +8,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.InternalTextApi
@@ -36,13 +37,13 @@ class Test(_path: String) {
     var data = ""
     var questionsData = ""
 
-    var active = true
+//    var active = true
 
     init {
         path = _path
         test = firestore.Document("tests/$_path")
         questions = firestore.Collection("tests/$_path/questions")
-        answerSheet = firestore.Document("users/${firebase.uid}")
+        answerSheet = firestore.Document("users/${firebase.uid}/answers/${_path}")
         data = test.data
 
         questionsData = questions.list()
@@ -209,7 +210,7 @@ class Test(_path: String) {
         override fun UI() {
             super.UI()
 
-            Row(Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp)) {
+            Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
                 var selected by remember {
                     mutableStateOf("")
                 }
@@ -252,7 +253,7 @@ class Test(_path: String) {
         override fun UI() {
             super.UI()
 
-            Row(Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp)) {
+            Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
                 Column {
                     Row {
                         QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
@@ -305,7 +306,7 @@ class Test(_path: String) {
         override fun UI() {
             super.UI()
 
-            Row {
+            Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
                 var blankAnswer by remember {
                     mutableStateOf(TextFieldValue(""))
                 }
@@ -367,7 +368,7 @@ class Test(_path: String) {
         override fun UI() {
             super.UI()
 
-            Row {
+            Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
                 Column {
                     Row {
                         QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
@@ -384,11 +385,11 @@ class Test(_path: String) {
                             onValueChange = {
                                 response = it
 
-                                if (it.toString().length > 300) {
-                                    response = TextFieldValue(response.toString().substring(0, 300))
+                                if (it.text.length > 300) {
+                                    response = TextFieldValue(it.text.substring(0, 300))
                                 }
 
-                                answer = it.toString()
+                                answer = it.text
                             }
                         )
                     }
@@ -414,7 +415,7 @@ class Test(_path: String) {
         override fun UI() {
             super.UI()
 
-            Row(Modifier.padding(0.dp, 5.dp, 0.dp, 5.dp)) {
+            Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
                 Column {
                     Row {
                         QuestionText("$number. $text ($points point${if (points > 1) "s" else ""})")
@@ -422,21 +423,21 @@ class Test(_path: String) {
 
                     Row {
                         val answers by remember {
-                            mutableStateOf(hashMapOf<Int, String>())
+                            mutableStateOf(arrayListOf<String>())
                         }
 
                         Column {
                             var count = 1
 
                             optionsA.forEach {
+
                                 val index = count - 1
-                                val counter = count
+
+                                answers.add("")
 
                                 var optionAnswer by remember {
                                     mutableStateOf(TextFieldValue(""))
                                 }
-
-                                answers[index] = ""
 
                                 Row(Modifier.padding(vertical = 10.dp)) {
                                     Row(Modifier
@@ -458,7 +459,7 @@ class Test(_path: String) {
                                                     optionAnswer = it
 
                                                     answers[index] = it.text
-                                                    answer = answers.toString()
+                                                    answer = answers.joinToString(",").replace(",,", "")
                                                 }
                                             },
                                         )
@@ -477,9 +478,6 @@ class Test(_path: String) {
                             var count = 1
 
                             optionsB.forEach {
-                                val index = count - 1
-                                val counter = count
-
                                 Row(Modifier.padding(vertical = 10.dp).fillMaxWidth().height(48.dp)) {
                                     Text(text = "$count. $it",
                                         color = (if (answers.toString().contains(count.toString())) Color.Black else Color.DarkGray),
@@ -496,61 +494,123 @@ class Test(_path: String) {
         }
     }
 
-    val persistenceScope = GlobalScope
-    lateinit var persistenceJob: Job
-
-    @Composable
-    fun UI() {
-        ScrollableColumn(scrollState = rememberScrollState(), modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-            Questions.forEach {
-                it.UI()
-
-                Divider(Modifier.fillMaxWidth())
-
-                println("Added UI for Question #${it.number}")
-            }
+    inner class UI {
+        init {
+            deactivated = false
         }
 
-        persistenceJob = persistenceScope.launch {
-            while (active) {
-                println("Saving answers...")
-
-                saveAnswers()
-
-                delay(30000)
+        @Composable
+        fun load() {
+            var active by remember {
+                mutableStateOf(true)
             }
 
-            println("Saved all answers!")
+            lateinit var persistenceJob: Job
+
+            if (active) {
+                Column {
+                    var time by remember {
+                        mutableStateOf(0)
+                    }
+
+                    Text(text = "UID: ${firebase.uid} | Time Remaining: ${(3600000 - time)/1000} Seconds", Modifier.align(Alignment.CenterHorizontally), fontSize = 30.sp, textAlign = TextAlign.Center)
+
+                    GlobalScope.launch {
+                        while (active && !deactivated) {
+                            delay(1000)
+                            time += 1000
+
+                            if (time >= 3600000) {
+                                deactivated = true
+
+                                persistenceJob.cancel()
+
+                                saveAnswers()
+
+                                println("Saved all answers!")
+
+                                active = false
+                            }
+
+                            if (!active || deactivated) {
+                                this.cancel()
+                            }
+                        }
+                    }
+                }
+
+                ScrollableColumn(
+                    scrollState = rememberScrollState(),
+                    modifier = Modifier.fillMaxHeight().border(2.dp, Color.Black).padding(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
+                ) {
+                    Questions.forEach {
+                        it.UI()
+
+                        Divider(Modifier.fillMaxWidth())
+
+                        println("Added UI for Question #${it.number}")
+                    }
+
+                    Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 12.dp),
+                        onClick = {
+                            deactivated = true
+
+                            persistenceJob.cancel()
+
+                            saveAnswers()
+
+                            println("Saved all answers!")
+
+                            active = false
+                        }
+                    ) {
+                        Text("Submit")
+                    }
+                }
+            } else {
+                Text("Good job! You're done! You can return to the home screen and take another test or close the application. " +
+                        "You will be automatically returned to the home screen after a minute.")
+            }
+
+            persistenceJob = GlobalScope.launch {
+                delay(1500)
+                while (active) {
+                    delay(30000)
+
+                    println("Saving answers...")
+
+                    saveAnswers()
+                }
+            }
         }
     }
 
     fun saveAnswers() {
-        var documentData = """
-            {
-                "fields": {
-        """
+        GlobalScope.launch {
+            var documentData = """
+                {
+                    "fields": {
+            """.trimIndent()
 
-        Questions.forEach {
-            documentData += """
-                    "question${it.number}": {
-                        "stringValue": "${it.answer}"
-                    },
-            """
-        }
-
-        documentData += """
-                }
+            Questions.forEach {
+                documentData += """
+                        "question${it.number}": {
+                            "stringValue": "${it.answer}"
+                        },
+                """.trimIndent()
             }
-        """
 
-        println(documentData)
-    }
+            documentData += """
+                    }
+                }
+            """.trimIndent()
 
-    fun end() {
-        active = false
+            answerSheet.update(documentData)
 
-        runBlocking {
-            persistenceJob.join()
+            println(documentData)
+
+            this.cancel()
         }
     }
 
