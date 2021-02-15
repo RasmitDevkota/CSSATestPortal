@@ -1,4 +1,8 @@
-import com.google.gson.internal.LinkedTreeMap
+data class SignIn (
+    var email: String = "",
+    var password: String = "",
+    var returnSecureToken: Boolean = true
+)
 
 data class Auth (
     var localId: String = "",
@@ -29,6 +33,10 @@ data class QuestionDocument (
     var updateTime: String = "",
 )
 
+data class AnswerDocument (
+    var fields: ArrayList<HashMap<String, Any>> = ArrayList()
+)
+
 fun stringValue(json: String?): String {
     return json!!.removeSurrounding("{stringValue=", "}")
 }
@@ -43,7 +51,6 @@ fun booleanValue(json: String?): Boolean {
 
 fun arrayValue(json: String?): ArrayList<String> {
     val array = ArrayList<String>()
-    println(json!!.removeSurrounding("{arrayValue={values=[", "]}}").split(", "))
     json!!.removeSurrounding("{arrayValue={values=[", "]}}").split(", ").forEach {
         when (it.removeSurrounding("{", "}").split("=")[0]) {
             "stringValue" -> array.add(stringValue(it))

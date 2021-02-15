@@ -17,21 +17,14 @@ class Firebase {
 
     inner class Authentication {
         fun authenticate(email: String, password: String) {
-            val signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = """
-                {
-                    "email": "$email",
-                    "password": "$password",
-                    "returnSecureToken": true
-                }
-            """.trimIndent())
+            val signInData = Gson().toJson(SignIn(email, password))
+
+            val signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = signInData)
 
             val AuthJson = Gson().fromJson(signInResponse, Auth().javaClass)
-            println(AuthJson)
 
             uid = AuthJson.localId
             userToken = AuthJson.idToken
-
-            println("\n$uid\n$userToken\n")
         }
     }
 

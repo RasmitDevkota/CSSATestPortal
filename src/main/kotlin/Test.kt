@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.flow
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.floor
 import kotlin.math.round
 
 class Test(_path: String) {
@@ -547,27 +548,19 @@ class Test(_path: String) {
 
     fun saveAnswers() {
         GlobalScope.launch {
-            var documentData = """
-                {
-                    "fields": {
-            """.trimIndent()
+            val answerFields: ArrayList<HashMap<String, Any>> = arrayListOf()
 
             Questions.forEach {
-                documentData += """
-                        "question${it.number}": {
-                            "stringValue": "${it.answer}"
-                        },
-                """.trimIndent()
+                answerFields.add(hashMapOf(
+                    "question${it.number}" to "{\"stringValue\": \"${it.answer}\"}"
+                ))
             }
 
-            documentData += """
-                    }
-                }
-            """.trimIndent()
+            val answerDocument = Gson().toJson(AnswerDocument(answerFields))
 
-            answerSheet.update(documentData)
+            answerSheet.update(answerDocument)
 
-            println(documentData)
+            println(answerDocument)
 
             this.cancel()
         }
@@ -575,7 +568,7 @@ class Test(_path: String) {
 
 
     fun countdownFlow() = flow {
-        for (time in 15 downTo 0) {
+        for (time in 3600 downTo 0) {
             delay(1000L)
 
             if (time <= 0) {
@@ -586,7 +579,7 @@ class Test(_path: String) {
                 return@flow
             }
 
-            val minutes = round(time.toDouble() / 60).toInt()
+            val minutes = floor(time.toDouble() / 60).toInt()
             val seconds = time % 60
 
             val timeText = "$minutes minute${if (minutes == 1) "" else "s"} and $seconds second${if (seconds == 1) "" else "s"}"
