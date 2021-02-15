@@ -21,6 +21,10 @@ class Authentication() {
     var redirectUri = "https://127.0.0.1:8310/"
 
     fun manualSignIn(_username: String, _password: String): Boolean {
+        if (badInput(arrayListOf(_username, _password))) {
+            return false
+        }
+
         username = _username
         password = _password
 
@@ -242,5 +246,22 @@ class Authentication() {
                 }
             }
         }
+    }
+
+    fun badInput(params: ArrayList<String>): Boolean {
+        val badRegex = Regex("""
+            (
+                
+            )
+        """.trimIndent())
+
+        params.forEach {
+            if (badRegex.matches(it)) {
+                println("Parameter $it contains bad input!")
+                return true
+            }
+        }
+
+        return false
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,8 +19,12 @@ import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
-import java.awt.Desktop
-import java.net.URI
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.math.round
 
 class Test(_path: String) {
     var path = ""
@@ -50,119 +53,92 @@ class Test(_path: String) {
 
         val questionGson: HashMap<String, Any> = Gson().fromJson(questionsData, object : TypeToken<HashMap<String, Any>>(){}.type)
 
-        questionGson.forEach {
-            val splitQuestions = it.value.toString().removeSurrounding("[{", "}]").replace("}, {name", "|=|name").split("|=|")
+        val questionsGson = Gson().fromJson(questionsData, QuestionList().javaClass)
 
-            splitQuestions.forEach { questionData ->
-                val dataName = Regex("""(?<=name=)projects/cssa-dev/databases/\(default\)/documents/tests/.*/questions/question.""").find(questionData)!!.value
-                val dataType = Regex("""(?<=type=\{stringValue=)(mcq|msq|fitb|srq|lrq|mq)""").find(questionData)!!.value
+        questionsGson.documents.forEach {
+            val name = it.name
 
-                println("\n$questionData\n")
+            val fieldsRaw = it.fields
+            val fields = hashMapOf<String, String>()
+            fieldsRaw.forEach { field ->
+                fields[field.key] = field.value.toString()
+            }
 
-                when (dataType) {
-                    "mcq" -> {
-                        val dataOptions = arrayListOf<String>()
-                        Regex("""(?<=options=\{arrayValue=\{values=\[).*?(?=])""").findAll(questionData).forEach { options ->
-                            options.value.removeSurrounding("{", "}").replace("}, {", ",").replace("stringValue=", "").split(",").forEach { option ->
-                                dataOptions.add(option)
-                            }
-                        }
+            when (stringValue(fields["type"])) {
+                "mcq" -> {
+                    val newQuestion = MCQ(
+                        number = name.takeLast(1).toInt(),
+                        type = stringValue(fields["type"]),
+                        text = stringValue(fields["text"]),
+                        image = stringValue(fields["image"]),
+                        points = integerValue(fields["value"]),
+                        tiebreaker = booleanValue(fields["tiebreaker"]),
+                        options = arrayValue(fields["options"])
+                    )
+                    Questions.add(newQuestion)
+                }
 
-                        val newQuestion = MCQ(
-                            number = dataName.takeLast(1).toInt(),
-                            type = dataType,
-                            text = Regex("""(?<=text=\{stringValue=).*?(?=}+,)""").find(questionData)!!.value,
-                            image = Regex("""(?<=image=\{)stringValue=.*?(?=}+,)""").find(questionData)!!.value.split("=")[1],
-                            points = Regex("""(?<=value=\{integerValue=).*?(?=}+,)""").find(questionData)!!.value.toInt(),
-                            tiebreaker = Regex("""(?<=tiebreaker=\{booleanValue=)(true|false)""").find(questionData)!!.value.toBoolean(),
-                            options = dataOptions
-                        )
-                        Questions.add(newQuestion)
-                    }
+                "msq" -> {
+                    val newQuestion = MSQ(
+                        number = name.takeLast(1).toInt(),
+                        type = stringValue(fields["type"]),
+                        text = stringValue(fields["text"]),
+                        image = stringValue(fields["image"]),
+                        points = integerValue(fields["value"]),
+                        tiebreaker = booleanValue(fields["tiebreaker"]),
+                        options = arrayValue(fields["options"])
+                    )
+                    Questions.add(newQuestion)
+                }
 
-                    "msq" -> {
-                        val dataOptions = arrayListOf<String>()
-                        Regex("""(?<=options=\{arrayValue=\{values=\[).*?(?=])""").findAll(questionData).forEach { options ->
-                            options.value.removeSurrounding("{", "}").replace("}, {", ",").replace("stringValue=", "").split(",").forEach { option ->
-                                dataOptions.add(option)
-                            }
-                        }
+                "fitb" -> {
+                    val newQuestion = FITB(
+                        number = name.takeLast(1).toInt(),
+                        type = stringValue(fields["type"]),
+                        text = stringValue(fields["text"]),
+                        image = stringValue(fields["image"]),
+                        points = integerValue(fields["value"]),
+                        tiebreaker = booleanValue(fields["tiebreaker"])
+                    )
+                    Questions.add(newQuestion)
+                }
 
-                        val newQuestion = MSQ(
-                            number = dataName.takeLast(1).toInt(),
-                            type = dataType,
-                            text = Regex("""(?<=text=\{stringValue=).*?(?=}+,)""").find(questionData)!!.value,
-                            image = Regex("""(?<=image=\{)stringValue=.*?(?=}+,)""").find(questionData)!!.value.split("=")[1],
-                            points = Regex("""(?<=value=\{integerValue=).*?(?=}+,)""").find(questionData)!!.value.toInt(),
-                            tiebreaker = Regex("""(?<=tiebreaker=\{booleanValue=)(true|false)""").find(questionData)!!.value.toBoolean(),
-                            options = dataOptions
-                        )
-                        Questions.add(newQuestion)
-                    }
+                "srq" -> {
+                    val newQuestion = SRQ(
+                        number = name.takeLast(1).toInt(),
+                        type = stringValue(fields["type"]),
+                        text = stringValue(fields["text"]),
+                        image = stringValue(fields["image"]),
+                        points = integerValue(fields["value"]),
+                        tiebreaker = booleanValue(fields["tiebreaker"])
+                    )
+                    Questions.add(newQuestion)
+                }
 
-                    "fitb" -> {
-                        val newQuestion = FITB(
-                            number = dataName.takeLast(1).toInt(),
-                            type = dataType,
-                            text = Regex("""(?<=text=\{stringValue=).*?(?=}+,)""").find(questionData)!!.value,
-                            image = Regex("""(?<=image=\{)stringValue=.*?(?=}+,)""").find(questionData)!!.value.split("=")[1],
-                            points = Regex("""(?<=value=\{integerValue=).*?(?=}+,)""").find(questionData)!!.value.toInt(),
-                            tiebreaker = Regex("""(?<=tiebreaker=\{booleanValue=)(true|false)""").find(questionData)!!.value.toBoolean()
-                        )
-                        Questions.add(newQuestion)
-                    }
+                "lrq" -> {
+                    val newQuestion = LRQ(
+                        number = name.takeLast(1).toInt(),
+                        type = stringValue(fields["type"]),
+                        text = stringValue(fields["text"]),
+                        image = stringValue(fields["image"]),
+                        points = integerValue(fields["value"]),
+                        tiebreaker = booleanValue(fields["tiebreaker"])
+                    )
+                    Questions.add(newQuestion)
+                }
 
-                    "srq" -> {
-                        val newQuestion = SRQ(
-                            number = dataName.takeLast(1).toInt(),
-                            type = dataType,
-                            text = Regex("""(?<=text=\{stringValue=).*?(?=}+,)""").find(questionData)!!.value,
-                            image = Regex("""(?<=image=\{)stringValue=.*?(?=}+,)""").find(questionData)!!.value.split("=")[1],
-                            points = Regex("""(?<=value=\{integerValue=).*?(?=}+,)""").find(questionData)!!.value.toInt(),
-                            tiebreaker = Regex("""(?<=tiebreaker=\{booleanValue=)(true|false)""").find(questionData)!!.value.toBoolean()
-                        )
-                        Questions.add(newQuestion)
-                    }
-
-                    "lrq" -> {
-                        val newQuestion = LRQ(
-                            number = dataName.takeLast(1).toInt(),
-                            type = dataType,
-                            text = Regex("""(?<=text=\{stringValue=).*?(?=}+,)""").find(questionData)!!.value,
-                            image = Regex("""(?<=image=\{)stringValue=.*?(?=}+,)""").find(questionData)!!.value.split("=")[1],
-                            points = Regex("""(?<=value=\{integerValue=).*?(?=}+,)""").find(questionData)!!.value.toInt(),
-                            tiebreaker = Regex("""(?<=tiebreaker=\{booleanValue=)(true|false)""").find(questionData)!!.value.toBoolean()
-                        )
-                        Questions.add(newQuestion)
-                    }
-
-                    "mq" -> {
-                        val dataOptionsA = arrayListOf<String>()
-                        Regex("""(?<=optionsA=\{arrayValue=\{values=\[).*?(?=])""").findAll(questionData).forEach { options ->
-                            options.value.removeSurrounding("{", "}").replace("}, {", ",").replace("stringValue=", "").split(",").forEach { option ->
-                                dataOptionsA.add(option)
-                            }
-                        }
-
-                        val dataOptionsB = arrayListOf<String>()
-                        Regex("""(?<=optionsB=\{arrayValue=\{values=\[).*?(?=])""").findAll(questionData).forEach { options ->
-                            options.value.removeSurrounding("{", "}").replace("}, {", ",").replace("stringValue=", "").split(",").forEach { option ->
-                                dataOptionsB.add(option)
-                            }
-                        }
-
-                        val newQuestion = MQ(
-                            number = dataName.takeLast(1).toInt(),
-                            type = dataType,
-                            text = Regex("""(?<=text=\{stringValue=).*?(?=}+,)""").find(questionData)!!.value,
-                            image = Regex("""(?<=image=\{)stringValue=.*?(?=}+,)""").find(questionData)!!.value.split("=")[1],
-                            points = Regex("""(?<=value=\{integerValue=).*?(?=}+,)""").find(questionData)!!.value.toInt(),
-                            tiebreaker = Regex("""(?<=tiebreaker=\{booleanValue=)(true|false)""").find(questionData)!!.value.toBoolean(),
-                            optionsA = dataOptionsA,
-                            optionsB = dataOptionsB
-                        )
-                        Questions.add(newQuestion)
-                    }
+                "mq" -> {
+                    val newQuestion = MQ(
+                        number = name.takeLast(1).toInt(),
+                        type = stringValue(fields["type"]),
+                        text = stringValue(fields["text"]),
+                        image = stringValue(fields["image"]),
+                        points = integerValue(fields["value"]),
+                        tiebreaker = booleanValue(fields["tiebreaker"]),
+                        optionsA = arrayValue(fields["optionsA"]),
+                        optionsB = arrayValue(fields["optionsB"]),
+                    )
+                    Questions.add(newQuestion)
                 }
             }
         }
@@ -494,6 +470,8 @@ class Test(_path: String) {
         }
     }
 
+    lateinit var persistenceJob: Job
+
     inner class UI {
         init {
             deactivated = false
@@ -505,38 +483,30 @@ class Test(_path: String) {
                 mutableStateOf(true)
             }
 
-            lateinit var persistenceJob: Job
+            persistenceJob = GlobalScope.launch {
+                delay(1500)
+                while (active) {
+                    delay(30000)
+
+                    println("Saving answers...")
+
+                    saveAnswers()
+                }
+            }
+
+            persistenceJob.invokeOnCompletion {
+                if (it is CancellationException) {
+                    saveAnswers()
+
+                    println("Saved all answers!")
+
+                    active = false
+                }
+            }
 
             if (active) {
                 Column {
-                    var time by remember {
-                        mutableStateOf(0)
-                    }
-
-                    Text(text = "UID: ${firebase.uid} | Time Remaining: ${(3600000 - time)/1000} Seconds", Modifier.align(Alignment.CenterHorizontally), fontSize = 30.sp, textAlign = TextAlign.Center)
-
-                    GlobalScope.launch {
-                        while (active && !deactivated) {
-                            delay(1000)
-                            time += 1000
-
-                            if (time >= 3600000) {
-                                deactivated = true
-
-                                persistenceJob.cancel()
-
-                                saveAnswers()
-
-                                println("Saved all answers!")
-
-                                active = false
-                            }
-
-                            if (!active || deactivated) {
-                                this.cancel()
-                            }
-                        }
-                    }
+                    TestTimer(countdownFlow())
                 }
 
                 ScrollableColumn(
@@ -572,17 +542,6 @@ class Test(_path: String) {
                 Text("Good job! You're done! You can return to the home screen and take another test or close the application. " +
                         "You will be automatically returned to the home screen after a minute.")
             }
-
-            persistenceJob = GlobalScope.launch {
-                delay(1500)
-                while (active) {
-                    delay(30000)
-
-                    println("Saving answers...")
-
-                    saveAnswers()
-                }
-            }
         }
     }
 
@@ -612,6 +571,40 @@ class Test(_path: String) {
 
             this.cancel()
         }
+    }
+
+
+    fun countdownFlow() = flow {
+        for (time in 15 downTo 0) {
+            delay(1000L)
+
+            if (time <= 0) {
+                deactivated = true
+
+                persistenceJob.cancel()
+
+                return@flow
+            }
+
+            val minutes = round(time.toDouble() / 60).toInt()
+            val seconds = time % 60
+
+            val timeText = "$minutes minute${if (minutes == 1) "" else "s"} and $seconds second${if (seconds == 1) "" else "s"}"
+
+            emit(timeText)
+        }
+    }
+
+    @Composable
+    fun TestTimer(countdown: Flow<String>) {
+        val timer by countdown.collectAsState(initial = "60 minutes and 0 seconds")
+
+        TimerText(timer)
+    }
+
+    @Composable
+    fun TimerText(timer: String) {
+        Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", /*Modifier.align(Alignment.CenterHorizontally),*/ fontSize = 30.sp, textAlign = TextAlign.Center)
     }
 
 }

@@ -1,3 +1,5 @@
+import com.google.gson.Gson
+
 class Firebase {
     var apiKey = "AIzaSyAPTvz8weUBIMyjl6ekC1uegX-j4u2Z1sc"
     var authDomain = "cssa-dev.firebaseapp.com"
@@ -23,11 +25,11 @@ class Firebase {
                 }
             """.trimIndent())
 
-            val localIdSubstring = signInResponse.substring(signInResponse.indexOf("\"localId\": \"") + 12)
-            uid = localIdSubstring.substring(0, localIdSubstring.indexOf("\""))
+            val AuthJson = Gson().fromJson(signInResponse, Auth().javaClass)
+            println(AuthJson)
 
-            val idTokenSubstring = signInResponse.substring(signInResponse.indexOf("\"idToken\": \"") + 12)
-            userToken = idTokenSubstring.substring(0, idTokenSubstring.indexOf("\""))
+            uid = AuthJson.localId
+            userToken = AuthJson.idToken
 
             println("\n$uid\n$userToken\n")
         }
@@ -113,6 +115,5 @@ class Firebase {
                 return this@Firestore.Collection("$path/$_path")
             }
         }
-
     }
 }
