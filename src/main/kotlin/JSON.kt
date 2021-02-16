@@ -1,3 +1,5 @@
+import com.google.gson.annotations.SerializedName
+
 data class SignIn (
     var email: String = "",
     var password: String = "",
@@ -34,7 +36,7 @@ data class QuestionDocument (
 )
 
 data class AnswerDocument (
-    var fields: ArrayList<HashMap<String, Any>> = ArrayList()
+    var fields: HashMap<String, HashMap<String, String>> = HashMap()
 )
 
 fun stringValue(json: String?): String {

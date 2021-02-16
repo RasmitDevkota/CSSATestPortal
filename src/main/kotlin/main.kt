@@ -1,3 +1,4 @@
+import androidx.compose.desktop.AppManager
 import androidx.compose.desktop.AppWindow
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
@@ -222,11 +223,13 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                         Column(Modifier
                             .align(Alignment.CenterHorizontally)
                             .background(Color(0xF0, 0xF0, 0xF0), RoundedCornerShape(8.dp))
-                            .border(3.dp, Color(33, 33, 33), RoundedCornerShape(8.dp))) {
+                            .border(3.dp, Color(33, 33, 33), RoundedCornerShape(8.dp))
+                        ) {
 
                             Column(Modifier
                                 .align(Alignment.CenterHorizontally)
-                                .padding(10.dp, 15.dp, 10.dp, 15.dp), Arrangement.spacedBy(15.dp)) {
+                                .padding(10.dp, 15.dp, 10.dp, 15.dp), Arrangement.spacedBy(15.dp)
+                            ) {
 
                                 if (noUsername) {
                                     var username by remember {
@@ -335,70 +338,65 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                                 onClick = {
-                                                    if (auth.checkUsername(username)) {
-                                                        if (auth.checkEmail(email)) {
-                                                            if (auth.createAccount(fName, lName, username, email, password)) {
-                                                                authenticated = true
-                                                            } else {
-                                                                signUpPopup = 1
+                                                    GlobalScope.launch {
+                                                        if (auth.checkUsername(username)) {
+                                                            if (auth.checkEmail(email)) {
+                                                                if (auth.createAccount(fName, lName, username, email, password)) {
+                                                                    authenticated = true
+                                                                } else {
+                                                                    signUpPopup = 1
 
-                                                                print("Error creating account")
+                                                                    print("Error creating account")
+                                                                }
+                                                            } else {
+                                                                signUpPopup = 2
+
+                                                                print("Email is already in use")
                                                             }
                                                         } else {
-                                                            signUpPopup = 2
+                                                            signUpPopup = 3
 
-                                                            print("Email is already in use")
+                                                            print("Username is already in use")
                                                         }
-                                                    } else {
-                                                        signUpPopup = 3
 
-                                                        print("Username is already in use")
+                                                        this.cancel()
                                                     }
-                                                }) {
+                                                }
+                                            ) {
                                                 Text("Sign Up")
                                             }
 
                                             TextButton(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                                 onClick = {
                                                     noUsername = false
-                                                }) {
+                                                }
+                                            ) {
                                                 Text("Already have an account? Sign in!")
                                             }
 
-                                            when (signUpPopup) {
-                                                0 -> {
+                                            if (signUpPopup != 0) {
+                                                Window(title = "CSSA Test Portal | Authentication Error", icon = loadImageResource("CSSA.png"), size = IntSize(450, 195), onDismissRequest = { signUpPopup = 0 }) {
+                                                    Column (Modifier.align(Alignment.CenterHorizontally)) {
+                                                        androidx.compose.material.Text(
+                                                            text = when (signUpPopup) {
+                                                                1 -> "There was an error creating your account, please retry after a while or restart the testing portal!"
+                                                                2 -> "That email is already being used by another account, please sign in or use a different email!"
+                                                                3 -> "That username is already being used by another account, please sign in or use a different username!"
+                                                                else -> {
+                                                                    signUpPopup = 0
 
-                                                }
+                                                                    ""
+                                                                }
+                                                            },
+                                                            Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
+                                                            fontSize = 15.sp, textAlign = TextAlign.Center
+                                                        )
 
-                                                1 -> {
-                                                    Dialog(onDismissRequest = { signUpPopup = 0 }) {
-                                                        Text("Error creating account.")
                                                         Button(
-                                                            onClick = { signUpPopup = 0 }
+                                                            onClick = { signUpPopup = 0; AppManager.focusedWindow!!.close() },
+                                                            Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp),
                                                         ) {
-                                                            Text(text = "Ok")
-                                                        }
-                                                    }
-                                                }
-
-                                                2 -> {
-                                                    Dialog(onDismissRequest = { signUpPopup = 0 }) {
-                                                        Text("Email already in use!")
-                                                        Button(
-                                                            onClick = { signUpPopup = 0 }
-                                                        ) {
-                                                            Text(text = "Ok")
-                                                        }
-                                                    }
-                                                }
-
-                                                3 -> {
-                                                    Dialog(onDismissRequest = { signUpPopup = 0 }) {
-                                                        Text("Username already in use!")
-                                                        Button(
-                                                            onClick = { signUpPopup = 0 }
-                                                        ) {
-                                                            Text(text = "Ok")
+                                                            androidx.compose.material.Text(text = "Ok", fontSize = 15.sp, textAlign = TextAlign.Center)
                                                         }
                                                     }
                                                 }
@@ -415,7 +413,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     }
 
                                     var signInPopup by remember {
-                                        mutableStateOf(false)
+                                        mutableStateOf(0)
                                     }
 
                                     Text("Username", textAlign = TextAlign.Left)
@@ -436,12 +434,20 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                         onClick = {
-                                            if (auth.manualSignIn(username, password)) {
-                                                authenticated = true
-                                            } else {
-                                                signInPopup = true
+                                            GlobalScope.launch {
+                                                if (username == "") {
+                                                    signInPopup = 2
+                                                } else if (password == "") {
+                                                    signInPopup = 3
+                                                } else if (auth.manualSignIn(username, password)) {
+                                                    authenticated = true
+                                                } else {
+                                                    signInPopup = 1
 
-                                                print("Invalid username or password");
+                                                    print("Unknown error occurred")
+                                                }
+
+                                                this.cancel()
                                             }
                                         }) {
                                         Text("Sign In")
@@ -454,13 +460,25 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                         Text("Don't have an account? Sign up!")
                                     }
 
-                                    if (signInPopup) {
-                                        Dialog(onDismissRequest = { signInPopup = false }) {
-                                            Text("Error creating account.")
-                                            Button(
-                                                onClick = { signInPopup = false }
-                                            ) {
-                                                Text(text = "Ok")
+                                    if (signInPopup != 0) {
+                                        Window(title = "CSSA Test Portal | Authentication Error", icon = loadImageResource("CSSA.png"), size = IntSize(450, 195)) {
+                                            Column (Modifier.align(Alignment.CenterHorizontally)) {
+                                                androidx.compose.material.Text(
+                                                    text = when (signInPopup) {
+                                                        2 -> "The username field is empty! Please make sure to enter a username!"
+                                                        3 -> "The username field is empty! Please make sure to enter a password!"
+                                                        else -> "Error signing in, please retry after a while or restart the testing portal!"
+                                                    },
+                                                    Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
+                                                    fontSize = 15.sp, textAlign = TextAlign.Center
+                                                )
+
+                                                Button(
+                                                    onClick = { signInPopup = 0; AppManager.focusedWindow!!.close() },
+                                                    Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp),
+                                                ) {
+                                                    androidx.compose.material.Text(text = "Ok", fontSize = 15.sp, textAlign = TextAlign.Center)
+                                                }
                                             }
                                         }
                                     }

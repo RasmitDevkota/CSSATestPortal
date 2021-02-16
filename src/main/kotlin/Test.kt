@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -548,12 +549,10 @@ class Test(_path: String) {
 
     fun saveAnswers() {
         GlobalScope.launch {
-            val answerFields: ArrayList<HashMap<String, Any>> = arrayListOf()
+            val answerFields: HashMap<String, HashMap<String, String>> = hashMapOf()
 
             Questions.forEach {
-                answerFields.add(hashMapOf(
-                    "question${it.number}" to "{\"stringValue\": \"${it.answer}\"}"
-                ))
+                answerFields["question${it.number}"] = hashMapOf("stringValue" to it.answer)
             }
 
             val answerDocument = Gson().toJson(AnswerDocument(answerFields))
