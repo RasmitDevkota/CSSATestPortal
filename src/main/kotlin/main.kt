@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
@@ -27,12 +29,16 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.MenuBar
+import androidx.compose.ui.zIndex
 import com.firefly.codec.http2.model.HttpMethod
 import com.firefly.kotlin.ext.http.HttpServer
 import kotlinx.coroutines.*
+import org.jetbrains.skija.Image
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.awt.Desktop
+import java.io.File
 import java.net.URI
 
 var auth = Authentication()
@@ -108,7 +114,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 if (tests.size == 0) {
                                     val userDocResponse = firestore.get("users/${firebase.uid}")
-                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
                                     eventSequence.forEach {
                                         tests[it.value] = Test(it.value)
                                     }
@@ -142,7 +148,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 if (tests.size == 0) {
                                     val userDocResponse = firestore.get("users/${firebase.uid}")
-                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None).*(?=")""").findAll(userDocResponse)
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
                                     eventSequence.forEach {
                                         tests[it.value] = Test(it.value)
                                     }
@@ -336,27 +342,39 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                 mutableStateOf(0)
                                             }
 
+//                                            var loading by remember {
+//                                                mutableStateOf(false)
+//                                            }
+
                                             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                                 onClick = {
                                                     GlobalScope.launch {
                                                         if (auth.checkUsername(username)) {
                                                             if (auth.checkEmail(email)) {
-                                                                if (auth.createAccount(fName, lName, username, email, password)) {
+//                                                                loading = true
+
+                                                                val authState = auth.createAccount(fName, lName, username, email, password)
+
+                                                                if (authState[0] as Boolean) {
+//                                                                    loading = false
+
                                                                     authenticated = true
                                                                 } else {
+//                                                                    loading = false
+
                                                                     signUpPopup = 1
 
-                                                                    print("Error creating account")
+                                                                    println("Error creating account")
                                                                 }
                                                             } else {
                                                                 signUpPopup = 2
 
-                                                                print("Email is already in use")
+                                                                println("Email is already in use")
                                                             }
                                                         } else {
                                                             signUpPopup = 3
 
-                                                            print("Username is already in use")
+                                                            println("Username is already in use")
                                                         }
 
                                                         this.cancel()
@@ -375,7 +393,12 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                             }
 
                                             if (signUpPopup != 0) {
-                                                Window(title = "CSSA Test Portal | Authentication Error", icon = loadImageResource("CSSA.png"), size = IntSize(450, 195), onDismissRequest = { signUpPopup = 0 }) {
+                                                Window(
+                                                    title = "CSSA Test Portal | Authentication Error",
+                                                    icon = loadImageResource("CSSA.png"),
+                                                    size = IntSize(450, 195),
+                                                    onDismissRequest = { signUpPopup = 0 }
+                                                ) {
                                                     Column (Modifier.align(Alignment.CenterHorizontally)) {
                                                         androidx.compose.material.Text(
                                                             text = when (signUpPopup) {
@@ -401,6 +424,16 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                     }
                                                 }
                                             }
+
+//                                            if (loading) {
+//                                                Column (Modifier.fillMaxSize().background(Color(0,0,0,4)).zIndex(1f)) {
+//                                                    Column(Modifier.fillMaxSize(0.27f).background(Color.White).align(Alignment.CenterHorizontally)) {
+//                                                        Text(text = "Loading...")
+//
+//                                                        CircularProgressIndicator(Modifier.wrapContentWidth(Alignment.CenterHorizontally))
+//                                                    }
+//                                                }
+//                                            }
                                         }
                                     }
                                 } else {
@@ -444,7 +477,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                 } else {
                                                     signInPopup = 1
 
-                                                    print("Unknown error occurred")
+                                                    println("Unknown error occurred")
                                                 }
 
                                                 this.cancel()
@@ -461,13 +494,23 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     }
 
                                     if (signInPopup != 0) {
-                                        Window(title = "CSSA Test Portal | Authentication Error", icon = loadImageResource("CSSA.png"), size = IntSize(450, 195)) {
+                                        Window(
+                                            title = "CSSA Test Portal | Authentication Error",
+                                            icon = loadImageResource("CSSA.png"),
+                                            size = IntSize(450, 195)
+                                        ) {
                                             Column (Modifier.align(Alignment.CenterHorizontally)) {
                                                 androidx.compose.material.Text(
                                                     text = when (signInPopup) {
                                                         2 -> "The username field is empty! Please make sure to enter a username!"
                                                         3 -> "The username field is empty! Please make sure to enter a password!"
-                                                        else -> "Error signing in, please retry after a while or restart the testing portal!"
+                                                        4 -> "An error occurred with your account, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                                                        5 -> "Please enter a valid password without any special characters like \" or }!"
+                                                        6 -> "It looks like you don't have an account! Please sign up or contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                                                        7 -> "Please enter a valid password without any special characters like \" or }!"
+                                                        8 -> "Invalid password! Please make sure you typed in your password correctly!"
+                                                        9 -> "Sorry, it looks like your account has been disabled! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                                                        else -> "Unknown error signing in, please retry after a while or restart the testing portal!"
                                                     },
                                                     Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
                                                     fontSize = 15.sp, textAlign = TextAlign.Center
@@ -537,6 +580,10 @@ private fun loadImageResource(path: String): BufferedImage {
     val resource = Thread.currentThread().contextClassLoader.getResource(path)
     requireNotNull(resource) { "Resource at path '$path' not found" }
     return resource.openStream().use(ImageIO::read)
+}
+
+fun imageFromFile(file: File): ImageBitmap {
+    return Image.makeFromEncoded(file.readBytes()).asImageBitmap()
 }
 
 @Composable

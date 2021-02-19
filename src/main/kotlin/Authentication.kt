@@ -21,9 +21,9 @@ class Authentication() {
     var redirectUri = "https://127.0.0.1:8310/"
 
     fun manualSignIn(_username: String, _password: String): Boolean {
-        if (badInput(arrayListOf(_username, _password))) {
-            return false
-        }
+//        if (badInput(arrayListOf(_username, _password))) {
+//            return false
+//        }
 
         username = _username
         password = _password
@@ -31,11 +31,11 @@ class Authentication() {
         val url = URL("https://cssa-backend.herokuapp.com/check")
         val con = url.openConnection() as HttpURLConnection
 
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Content-Type", "application/json; utf-8")
+        con.setRequestProperty("Accept", "application/json")
 
-        con.requestMethod = "POST";
-        con.doOutput = true;
+        con.requestMethod = "POST"
+        con.doOutput = true
 
         val data = """
             {
@@ -61,7 +61,7 @@ class Authentication() {
             }
 
             return if (response.toString() == "false") {
-                false;
+                false
             } else {
                 val json: JsonValue = JsonKraken.deserialize(response.toString())
                 email = json["info"][0].toString().replace("\"", "")
@@ -70,7 +70,7 @@ class Authentication() {
                 lName = json["info"][3].toString().replace("\"", "")
 
                 firebaseAuth.authenticate(email, password)
-                true;
+                true
             }
         }
     }
@@ -139,7 +139,7 @@ class Authentication() {
         }
     }
 
-    fun createAccount(_fName: String, _lName: String, _username: String, _email: String, _password: String): Boolean {
+    fun createAccount(_fName: String, _lName: String, _username: String, _email: String, _password: String): ArrayList<Any> {
         username = _username
         email = _email
         fName = _fName
@@ -165,7 +165,10 @@ class Authentication() {
             }
             """.trimIndent()
 
-        firebaseAuth.authenticate(email, password)
+        val tryFirebaseCreate = firebaseAuth.create(email, password)
+        if (tryFirebaseCreate != 0) {
+            return arrayListOf(false, tryFirebaseCreate)
+        }
 
         con.outputStream.use { os ->
             val input: ByteArray = data.toByteArray()
@@ -177,10 +180,12 @@ class Authentication() {
         ).use { br ->
             val response = StringBuilder()
             var responseLine: String?
+
             while (br.readLine().also { responseLine = it } != null) {
                 response.append(responseLine!!.trim { it <= ' ' })
             }
-            return response.toString() == "1"
+
+            return arrayListOf(response.toString() == "1")
         }
     }
 
@@ -213,16 +218,13 @@ class Authentication() {
 
     class GoogleHttpHandler : HttpHandler {
         override fun handle(t: HttpExchange) {
-            var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com";
-            var clientSecret = "KZdxDA3r_gF18eCACoFUdapt";
-            var authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
-            var redirectUri = "http://127.0.0.1:8310/"
+            val clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com"
+            val authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+            val redirectUri = "http://127.0.0.1:8310/"
 
-            var authorizationString = "$authorizationEndpoint?response_type=code&scope=openid%20profile&redirect_uri=$redirectUri&client_id=$clientID"
+            val url = URL("$authorizationEndpoint?response_type=code&scope=openid%20profile&redirect_uri=$redirectUri&client_id=$clientID")
 
-            val url = URL(authorizationString)
-
-            var response = """
+            val response = """
                 <!DOCTYPE html>
                 <html>
                     Loading

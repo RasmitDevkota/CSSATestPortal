@@ -1,5 +1,3 @@
-import com.google.gson.annotations.SerializedName
-
 data class SignIn (
     var email: String = "",
     var password: String = "",
@@ -17,11 +15,11 @@ data class Auth (
 )
 
 data class User (
-    var event1: String = "None",
-    var event2: String = "None",
-    var event3: String = "None",
-    var event4: String = "None",
-    var role: String = ""
+    var event1: String? = null,
+    var event2: String? = null,
+    var event3: String? = null,
+    var event4: String? = null,
+    var role: String? = null
 )
 
 data class QuestionList (
@@ -37,6 +35,23 @@ data class QuestionDocument (
 
 data class AnswerDocument (
     var fields: HashMap<String, HashMap<String, String>> = HashMap()
+)
+
+data class Error(
+    val error: ErrorBody
+)
+
+data class ErrorBody(
+    val code: Int = 200,
+    val errors: ArrayList<Errors> = ArrayList(),
+    val message: String = "",
+    val status: String = ""
+)
+
+data class Errors(
+    val domain: String = "",
+    val message: String = "",
+    val reason: String = ""
 )
 
 fun stringValue(json: String?): String {

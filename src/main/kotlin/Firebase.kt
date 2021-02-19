@@ -15,28 +15,165 @@ class Firebase {
     var uid = ""
     var userToken = ""
 
+    lateinit var user: User
+
     inner class Authentication {
-        fun authenticate(email: String, password: String) {
+        fun authenticate(email: String, password: String): Int {
             val signInData = Gson().toJson(SignIn(email, password))
 
             val signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = signInData)
 
-            val AuthJson = Gson().fromJson(signInResponse, Auth().javaClass)
+            when (signInResponse.split("|()|")[0]) {
+                "200" -> {
+                    val AuthJson = Gson().fromJson(signInResponse.split("|()|")[2], Auth().javaClass)
 
-            uid = AuthJson.localId
-            userToken = AuthJson.idToken
+                    uid = AuthJson.localId
+                    userToken = AuthJson.idToken
+
+                    println("Successful authentication")
+
+                    return 0
+                }
+
+                else -> {
+                    val ErrorJson = Gson().fromJson(signInResponse.split("|()|")[2], Error().javaClass)
+
+                    when (ErrorJson.message) {
+                        "MISSING_EMAIL" -> {
+                            return 4
+                        }
+
+                        "MISSING_PASSWORD" -> {
+                            return 5
+                        }
+
+                        "EMAIL_NOT_FOUND" -> {
+                            return 6
+                        }
+
+                        "INVALID_EMAIL" -> {
+                            return 7
+                        }
+
+                        "INVALID_PASSWORD" -> {
+                            return 8
+                        }
+
+                        "USER_DISABLED" -> {
+                            return 9
+                        }
+
+                        else -> {
+                            return 1
+                        }
+                    }
+                }
+            }
+        }
+
+        fun create(email: String, password: String): Int {
+            val signUpData = Gson().toJson(SignIn(email, password))
+
+            val signUpResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = signUpData)
+
+            when (signUpResponse.split("|()|")[0]) {
+                "200" -> {
+                    val AuthJson = Gson().fromJson(signUpResponse, Auth().javaClass)
+
+                    uid = AuthJson.localId
+                    userToken = AuthJson.idToken
+
+                    return 0
+                }
+
+                else -> {
+                    val ErrorJson = Gson().fromJson(signUpResponse.split("|()|")[2], Error().javaClass)
+
+                    when (ErrorJson.message) {
+                        "MISSING_EMAIL" -> {
+                            return 0
+                        }
+
+                        "MISSING_PASSWORD" -> {
+                            return 0
+                        }
+
+                        "EMAIL_EXISTS" -> {
+                            return 2
+                        }
+
+                        "INVALID_EMAIL" -> {
+                            return 0
+                        }
+
+                        "INVALID_PASSWORD" -> {
+                            return 0
+                        }
+
+                        "TOO_MANY_ATTEMPTS_TRY_LATER" -> {
+                            return 0
+                        }
+
+                        else -> {
+                            return 0
+                        }
+                    }
+                }
+            }
         }
     }
 
     inner class Firestore {
         fun get(_path: String): String {
-            return http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey&access_token=$userToken", token = userToken)
+            val getResponse = http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey&access_token=$userToken", token = userToken)
+
+            when (getResponse.split("|()|")[0]) {
+                "200" -> {
+                    // Parse
+
+                    return getResponse.split("|()|")[2]
+                }
+
+                else -> {
+                    val ErrorJson = Gson().fromJson(getResponse.split("|()|")[2], Error().javaClass)
+
+                    when (ErrorJson.message) {
+                        "ABORTED" -> {
+                            return "~Error|Looks like you're doing too many actions, please slow down!"
+                        }
+
+                        "INTERNAL", "RESOURCE_EXHAUSTED", "UNAVAILABLE" -> {
+                            return "~Error|Looks like there's an error with our database, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                        }
+
+                        "INVALID_ARGUMENT" -> {
+                            return "~Error|Looks like there's a problem accessing our database, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                        }
+
+                        "NOT_FOUND" -> {
+                            return "~Error|Looks like something is missing, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                        }
+
+                        "PERMISSION_DENIED" -> {
+                            return "~Error|Looks like you don't have permission to do this, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                        }
+
+                        "UNAUTHENTICATED" -> {
+                            return "~Error|Looks like there's a problem with your account, please trying signing out and in again or restart the testing portal!"
+                        }
+
+                        else -> {
+                            return "~Error|Unknown error occurred, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                        }
+                    }
+                }
+            }
         }
 
-        inner class Collection(_path: String, _parent: Collection? = null) {
+        inner class Collection(_path: String, _parent: Document? = null) {
             var name = ""
             var path = ""
-            var parent: Collection? = null
+            var parent: Document? = null
 
             var children = hashMapOf<String, Document>()
 
@@ -72,9 +209,7 @@ class Firebase {
             private var _data = ""
             val data: String
                 get() {
-                    if (_data == "") {
-                        _data = firestore.get(path)
-                    }
+                    _data = firestore.get(path)
 
                     return _data
                 }

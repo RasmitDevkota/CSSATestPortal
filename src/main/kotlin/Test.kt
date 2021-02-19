@@ -17,16 +17,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.floor
-import kotlin.math.round
 
 class Test(_path: String) {
     var path = ""
@@ -502,12 +501,24 @@ class Test(_path: String) {
 
                     println("Saved all answers!")
 
+                    firestore.Document("users/${firebase.uid}").update(Gson().toJson(firebase.user.apply {
+                        if (this.event1 == path) {
+                            this.event1 = "$path!"
+                        } else if (this.event2 == path) {
+                            this.event2 = "$path!"
+                        } else if (this.event3 == path) {
+                            this.event3 = "$path!"
+                        } else if (this.event4 == path) {
+                            this.event4 = "$path!"
+                        }
+                    }))
+
                     active = false
                 }
             }
 
             if (active) {
-                Column {
+                Column(Modifier, Arrangement.Center) {
                     TestTimer(countdownFlow())
                 }
 
@@ -517,6 +528,17 @@ class Test(_path: String) {
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     Questions.forEach {
+                        if (it.image != "") {
+                            val image = remember {
+                                imageFromFile(File(it.image))
+                            }
+
+                            Image(
+                                bitmap = image,
+                                modifier = Modifier.fillMaxWidth(0.2f)
+                            )
+                        }
+
                         it.UI()
 
                         Divider(Modifier.fillMaxWidth())
@@ -596,7 +618,7 @@ class Test(_path: String) {
 
     @Composable
     fun TimerText(timer: String) {
-        Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", /*Modifier.align(Alignment.CenterHorizontally),*/ fontSize = 30.sp, textAlign = TextAlign.Center)
+        Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", fontSize = 30.sp, textAlign = TextAlign.Center)
     }
 
 }

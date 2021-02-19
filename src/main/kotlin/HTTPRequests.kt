@@ -5,14 +5,11 @@ import java.net.HttpURLConnection
 import java.net.URL
 import okhttp3.OkHttpClient
 
-
-
-
 class HTTPRequests {
     fun get(_url: String, token: String = ""): String {
         var response = ""
 
-        var url = _url.replace(" ", "%20")
+        val url = _url.replace(" ", "%20")
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "GET"
@@ -22,11 +19,21 @@ class HTTPRequests {
                 setRequestProperty("Authorization", "Bearer $token")
             }
 
-//            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+            if (responseCode != 200) {
+                println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
-            inputStream.bufferedReader().use {
-                it.lines().forEach { line ->
-                    response += "$line\n"
+                response = "$responseCode|()|$responseMessage|()|"
+
+                inputStream.bufferedReader().use {
+                    it.lines().forEach { line ->
+                        response += line
+                    }
+                }
+            } else {
+                inputStream.bufferedReader().use {
+                    it.lines().forEach { line ->
+                        response += "$line\n"
+                    }
                 }
             }
 
@@ -39,7 +46,7 @@ class HTTPRequests {
     fun post(_url: String, data: String = "", token: String = ""): String {
         var response = ""
 
-        var url = _url.replace(" ", "%20")
+        val url = _url.replace(" ", "%20")
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"
@@ -57,11 +64,23 @@ class HTTPRequests {
                 stream.write(out)
             }
 
-//            println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+            if (responseCode != 200) {
+                println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
 
-            inputStream.bufferedReader().use {
-                it.lines().forEach { line ->
-                    response += "$line\n"
+                println(data)
+
+                response = "$responseCode|()|$responseMessage|()|"
+
+                inputStream.bufferedReader().use {
+                    it.lines().forEach { line ->
+                        response += line
+                    }
+                }
+            } else {
+                inputStream.bufferedReader().use {
+                    it.lines().forEach { line ->
+                        response += "$line\n"
+                    }
                 }
             }
 
@@ -101,13 +120,15 @@ class HTTPRequests {
     fun delete(_url: String): String {
         var response = ""
 
-        var url = _url.replace(" ", "%20")
+        val url = _url.replace(" ", "%20")
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "DELETE"
             doOutput = true
 
-//            println("\nSent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+            if (responseCode != 200) {
+                println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+            }
 
             inputStream.bufferedReader().use {
                 it.lines().forEach { line ->
