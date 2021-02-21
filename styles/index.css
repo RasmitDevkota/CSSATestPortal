@@ -1,0 +1,30 @@
+#auth-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 33%;
+    padding: 2%;
+    background-color: lightgray;
+}
+
+#signin {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#signin > * {
+    margin: 2% 30%;
+    width: 40%;
+}
+
+#signup {
+    display: none;
+    flex-direction: column;
+}
+
+#signup-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
