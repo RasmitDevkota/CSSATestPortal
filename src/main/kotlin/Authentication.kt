@@ -1,3 +1,4 @@
+import com.google.gson.Gson
 import net.jemzart.jsonkraken.JsonKraken
 import net.jemzart.jsonkraken.JsonValue
 import java.io.BufferedReader
@@ -20,7 +21,7 @@ class Authentication() {
     var clientSecret = "KZdxDA3r_gF18eCACoFUdapt";
     var redirectUri = "https://127.0.0.1:8310/"
 
-    fun manualSignIn(_username: String, _password: String): Boolean {
+    fun manualSignIn(_username: String, _password: String): Int {
 //        if (badInput(arrayListOf(_username, _password))) {
 //            return false
 //        }
@@ -37,12 +38,7 @@ class Authentication() {
         con.requestMethod = "POST"
         con.doOutput = true
 
-        val data = """
-            {
-                "Unknown": "$username",
-                "Password": "$password"
-            }
-            """.trimIndent()
+        val data = Gson().toJson(BackendCredentials(username, password))
 
         con.outputStream.use { os ->
             val input: ByteArray = data.toByteArray()
@@ -60,17 +56,25 @@ class Authentication() {
                 response.append(responseLine!!.trim { it <= ' ' })
             }
 
-            return if (response.toString() == "false") {
-                false
-            } else {
-                val json: JsonValue = JsonKraken.deserialize(response.toString())
-                email = json["info"][0].toString().replace("\"", "")
-                username = json["info"][1].toString().replace("\"", "")
-                fName = json["info"][2].toString().replace("\"", "")
-                lName = json["info"][3].toString().replace("\"", "")
+            println(response.toString())
 
-                firebaseAuth.authenticate(email, password)
-                true
+            return if (response.toString().toBoolean()) {
+                response.toString().toInt()
+            } else {
+                val backendUser = Gson().fromJson(response.toString(), BackendUser().javaClass)
+
+                println(backendUser.info)
+
+                email = backendUser.info[0].replace("\"", "")
+                username = backendUser.info[1].replace("\"", "")
+                fName = backendUser.info[2].replace("\"", "")
+                lName = backendUser.info[3].replace("\"", "")
+
+                val tryFirebaseAuthenticate = firebaseAuth.authenticate(email, password)
+
+                println(tryFirebaseAuthenticate)
+
+                tryFirebaseAuthenticate
             }
         }
     }
@@ -88,7 +92,6 @@ class Authentication() {
         con.doOutput = true;
 
         val data = username
-
 
         con.outputStream.use { os ->
             val input: ByteArray = data.toByteArray()

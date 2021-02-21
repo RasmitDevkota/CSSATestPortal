@@ -472,12 +472,15 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                     signInPopup = 2
                                                 } else if (password == "") {
                                                     signInPopup = 3
-                                                } else if (auth.manualSignIn(username, password)) {
-                                                    authenticated = true
                                                 } else {
-                                                    signInPopup = 1
+                                                    val trySignIn = auth.manualSignIn(username, password)
 
-                                                    println("Unknown error occurred")
+                                                    if (trySignIn == 0) {
+                                                        authenticated = true
+                                                        signInPopup = 1
+                                                    } else {
+                                                        println("Unknown error occurred")
+                                                    }
                                                 }
 
                                                 this.cancel()
@@ -503,7 +506,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                 androidx.compose.material.Text(
                                                     text = when (signInPopup) {
                                                         2 -> "The username field is empty! Please make sure to enter a username!"
-                                                        3 -> "The username field is empty! Please make sure to enter a password!"
+                                                        3 -> "The password field is empty! Please make sure to enter a password!"
                                                         4 -> "An error occurred with your account, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
                                                         5 -> "Please enter a valid password without any special characters like \" or }!"
                                                         6 -> "It looks like you don't have an account! Please sign up or contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"

@@ -4,6 +4,15 @@ data class SignIn (
     var returnSecureToken: Boolean = true
 )
 
+data class BackendCredentials (
+    var Unknown: String = "",
+    var Password: String = ""
+)
+
+data class BackendUser (
+    var info: ArrayList<String> = ArrayList()
+)
+
 data class Auth (
     var localId: String = "",
     var email: String =  "",

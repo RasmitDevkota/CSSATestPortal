@@ -38,6 +38,8 @@ class Firebase {
                 else -> {
                     val ErrorJson = Gson().fromJson(signInResponse.split("|()|")[2], Error().javaClass)
 
+                    println(ErrorJson.message)
+
                     when (ErrorJson.message) {
                         "MISSING_EMAIL" -> {
                             return 4
