@@ -471,6 +471,18 @@ class Test(_path: String) {
         }
     }
 
+    // Text Block
+    inner class TXT (
+        val text: String
+    ) {
+        @Composable
+        fun UI() {
+            Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
+                Text(text)
+            }
+        }
+    }
+
     lateinit var persistenceJob: Job
 
     inner class UI {
@@ -486,6 +498,9 @@ class Test(_path: String) {
 
             persistenceJob = GlobalScope.launch {
                 delay(1500)
+
+                saveAnswers(1)
+
                 while (active) {
                     delay(30000)
 
@@ -497,7 +512,7 @@ class Test(_path: String) {
 
             persistenceJob.invokeOnCompletion {
                 if (it is CancellationException) {
-                    saveAnswers()
+                    saveAnswers(2)
 
                     println("Saved all answers!")
 
@@ -552,10 +567,6 @@ class Test(_path: String) {
 
                             persistenceJob.cancel()
 
-                            saveAnswers()
-
-                            println("Saved all answers!")
-
                             active = false
                         }
                     ) {
@@ -569,12 +580,28 @@ class Test(_path: String) {
         }
     }
 
-    fun saveAnswers() {
+    var saveIteration = 0
+
+    fun saveAnswers(status: Int = 0) {
         GlobalScope.launch {
             val answerFields: HashMap<String, HashMap<String, String>> = hashMapOf()
 
-            Questions.forEach {
-                answerFields["question${it.number}"] = hashMapOf("stringValue" to it.answer)
+            when (status) {
+                1 -> {
+                    answerFields["startTime"] = hashMapOf("stringValue" to "${System.currentTimeMillis()}")
+                }
+
+                2 -> {
+                    answerFields["endTime"] = hashMapOf("stringValue" to "${System.currentTimeMillis()}")
+                }
+
+                else -> {
+                    Questions.forEach {
+                        answerFields["question${it.number}"] = hashMapOf("stringValue" to it.answer)
+                    }
+
+                    answerFields["save$saveIteration"] = hashMapOf("stringValue" to "${System.currentTimeMillis()}")
+                }
             }
 
             val answerDocument = Gson().toJson(AnswerDocument(answerFields))

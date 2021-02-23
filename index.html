@@ -2,6 +2,8 @@
   <head>
     <title>CSSA Test Portal</title>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
     <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
 
     <script src="scripts/script.js"></script>
@@ -19,13 +21,30 @@
           <input id="si-username" type="text">
           <input id="si-password" type="password">
 
-          <button></button>
+          <a onclick="display('signin');display('signup');">Don't have an account? Sign up!</a>
+
+          <button>Sign in</button>
         </div>
 
         <div id="signup">
           <div class="signup-row">
-
+            <input id="su-username" type="text">
+            <input id="su-email" type="text">
           </div>
+
+          <div class="signup-row">
+            <input id="su-firstname" type="text">
+            <input id="su-lastname" type="text">
+          </div>
+
+          <div class="signup-row">
+            <input id="su-pwd" type="password">
+            <input id="su-confirmpwd" type="password">
+          </div>
+
+          <a onclick="display('signin');display('signup');">Already have an account? Sign in!</a>
+
+          <button>Sign up</button>
         </div>
 
         <hr>

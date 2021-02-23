@@ -53,3 +53,15 @@ function pageLoad(u) {
         }
     }
 }
+
+function _(id) {
+    return document.getElementById(id);
+}
+
+function display(id) {
+    if (_(id).style.display == "none") {
+        _(id).style.display = "none"
+    } else {
+        _(id).style.display = "none"
+    }
+}

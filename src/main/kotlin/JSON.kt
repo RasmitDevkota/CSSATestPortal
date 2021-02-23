@@ -46,18 +46,18 @@ data class AnswerDocument (
     var fields: HashMap<String, HashMap<String, String>> = HashMap()
 )
 
-data class Error(
+data class Error (
     val error: ErrorBody
 )
 
-data class ErrorBody(
+data class ErrorBody (
     val code: Int = 200,
     val errors: ArrayList<Errors> = ArrayList(),
     val message: String = "",
     val status: String = ""
 )
 
-data class Errors(
+data class Errors (
     val domain: String = "",
     val message: String = "",
     val reason: String = ""

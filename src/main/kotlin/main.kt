@@ -405,11 +405,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                                 1 -> "There was an error creating your account, please retry after a while or restart the testing portal!"
                                                                 2 -> "That email is already being used by another account, please sign in or use a different email!"
                                                                 3 -> "That username is already being used by another account, please sign in or use a different username!"
-                                                                else -> {
-                                                                    signUpPopup = 0
-
-                                                                    ""
-                                                                }
+                                                                else -> "Unknown error signing up, please retry after a while or restart the testing portal!"
                                                             },
                                                             Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
                                                             fontSize = 15.sp, textAlign = TextAlign.Center
@@ -477,7 +473,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                                     if (trySignIn == 0) {
                                                         authenticated = true
-                                                        signInPopup = 1
+                                                        signInPopup = 0
                                                     } else {
                                                         println("Unknown error occurred")
                                                     }
@@ -511,7 +507,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                         5 -> "Please enter a valid password without any special characters like \" or }!"
                                                         6 -> "It looks like you don't have an account! Please sign up or contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
                                                         7 -> "Please enter a valid password without any special characters like \" or }!"
-                                                        8 -> "Invalid password! Please make sure you typed in your password correctly!"
+                                                        8 -> "Invalid credentials! Please make sure you typed in your username and password correctly!"
                                                         9 -> "Sorry, it looks like your account has been disabled! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
                                                         else -> "Unknown error signing in, please retry after a while or restart the testing portal!"
                                                     },

@@ -3,6 +3,8 @@
     flex-direction: column;
     justify-content: center;
     width: 33%;
+    height: 50%;
+    margin: 10% 0%;
     padding: 2%;
     background-color: lightgray;
 }
