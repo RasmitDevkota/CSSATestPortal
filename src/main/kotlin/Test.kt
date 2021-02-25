@@ -285,7 +285,7 @@ class Test(_path: String) {
 
             Row(Modifier.padding(15.dp, 5.dp, 0.dp, 5.dp)) {
                 var blankAnswer by remember {
-                    mutableStateOf(TextFieldValue(""))
+                    mutableStateOf(TextFieldValue(answer))
                 }
 
                 val blankIndex = text.indexOf("|~~~~|")
@@ -297,6 +297,7 @@ class Test(_path: String) {
 
                     Row {
                         Text(half1)
+
                         QuestionField(
                             modifier = Modifier
                                 .width(200.dp)
@@ -310,6 +311,7 @@ class Test(_path: String) {
                                 }
                             },
                         )
+
                         Text(half2)
                     }
                 }
@@ -353,7 +355,7 @@ class Test(_path: String) {
 
                     Column {
                         var response by remember {
-                            mutableStateOf(TextFieldValue(""))
+                            mutableStateOf(TextFieldValue(answer))
                         }
 
                         QuestionField(

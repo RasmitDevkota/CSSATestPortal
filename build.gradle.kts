@@ -39,7 +39,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 
             packageName = "CSSA Test Portal"
-            version = "0.2"
+            version = "0.3"
             description = "Test portal application for CSSA"
             copyright = "© 2020 CSSA. All rights reserved."
             vendor = "CSSA"

@@ -29,7 +29,7 @@ class Authentication() {
         username = _username
         password = _password
 
-        val url = URL("https://cssa-backend.herokuapp.com/check")
+        val url = URL("https://backend.cssa.dev/check")
         val con = url.openConnection() as HttpURLConnection
 
         con.setRequestProperty("Content-Type", "application/json; utf-8")

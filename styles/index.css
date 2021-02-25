@@ -1,12 +1,33 @@
+#content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.sub-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+
 #auth-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: 33%;
     height: 50%;
-    margin: 10% 0%;
+    margin: 1% 0%;
     padding: 2%;
     background-color: lightgray;
+}
+
+.auth-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 #signin {
@@ -16,8 +37,7 @@
 }
 
 #signin > * {
-    margin: 2% 30%;
-    width: 40%;
+    margin: 2% 0%;
 }
 
 #signup {
@@ -25,8 +45,17 @@
     flex-direction: column;
 }
 
-#signup-row {
+#auth-wrapper hr {
+    color: black;
+    width: 40%;
+}
+
+#google-row {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
+}
+
+#auth-wrapper button {
+    width: 30%;
 }

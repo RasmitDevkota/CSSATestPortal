@@ -1,3 +1,25 @@
+function auth() {
+    let ue = _("si-ue").value;
+    const pwd = _("si-password").value;
+
+    if (!ue.includes("@")) {
+        ue = getEmail(ue);
+    }
+
+    firebase.auth().signInWithEmailAndPassword(ue, pwd).then(() => {
+        console.log("Signed in!");
+    }).catch((error) => {
+        console.error(`Error occurred signing in: ${error}`);
+        console.log(error.code)
+
+        alert(`Error occurred: ${error.message}`);
+    });
+}
+
+function getEmail(username) {
+    return "rdatch101@gmail.com" // Change later!
+}
+
 function unauth() {
     if (firebase.auth().currentUser != null) {
         firebase.auth().signOut();
