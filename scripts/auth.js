@@ -8,6 +8,8 @@ function auth() {
 
     firebase.auth().signInWithEmailAndPassword(ue, pwd).then(() => {
         console.log("Signed in!");
+
+        window.location.href = "dashboard.html";
     }).catch((error) => {
         console.error(`Error occurred signing in: ${error}`);
         console.log(error.code)

@@ -40,33 +40,33 @@ class Firebase {
 
                     println(ErrorJson.message)
 
-                    when (ErrorJson.message) {
+                    return when (ErrorJson.message) {
                         "MISSING_EMAIL" -> {
-                            return 4
+                            4
                         }
 
                         "MISSING_PASSWORD" -> {
-                            return 5
+                            5
                         }
 
                         "EMAIL_NOT_FOUND" -> {
-                            return 6
+                            6
                         }
 
                         "INVALID_EMAIL" -> {
-                            return 7
+                            7
                         }
 
                         "INVALID_PASSWORD" -> {
-                            return 8
+                            8
                         }
 
                         "USER_DISABLED" -> {
-                            return 9
+                            9
                         }
 
                         else -> {
-                            return 1
+                            1
                         }
                     }
                 }

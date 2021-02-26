@@ -1,5 +1,9 @@
 let currentEvent = "None";
 
+window.addEventListener("load", () => {
+    _("welcome-user").innerHTML = `Welcome, ${user}`
+});
+
 function loadCompetition() {
     userDoc.get().then((doc) => {
         for (let e = 1; e < 5; e++) {
@@ -9,7 +13,7 @@ function loadCompetition() {
                     <div>
                         <a href="test.html?test=${doc.data().event1}">${doc.data().event1}</a>
                     </div>
-                `
+                `;
             }
         }
     });

@@ -53,6 +53,7 @@ class HTTPRequests {
             doOutput = true
 
             setRequestProperty("Content-Type", "application/json")
+            setRequestProperty("Content-Length", "0")
 
             if (token != "") {
                 setRequestProperty("Authorization", "Bearer $token");
