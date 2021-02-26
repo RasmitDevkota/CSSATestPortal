@@ -55,7 +55,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
     }
 
     var authenticated by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     var currentPage by remember {
@@ -349,32 +349,18 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                             Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                                 onClick = {
                                                     GlobalScope.launch {
-                                                        if (auth.checkUsername(username)) {
-                                                            if (auth.checkEmail(email)) {
-//                                                                loading = true
+                                                        val authState = auth.createAccount(fName, lName, username, email, password)
 
-                                                                val authState = auth.createAccount(fName, lName, username, email, password)
+                                                        if (authState[0] as Boolean) {
+//                                                          loading = false
 
-                                                                if (authState[0] as Boolean) {
-//                                                                    loading = false
-
-                                                                    authenticated = true
-                                                                } else {
-//                                                                    loading = false
-
-                                                                    signUpPopup = 1
-
-                                                                    println("Error creating account")
-                                                                }
-                                                            } else {
-                                                                signUpPopup = 2
-
-                                                                println("Email is already in use")
-                                                            }
+                                                            authenticated = true
                                                         } else {
-                                                            signUpPopup = 3
+//                                                          loading = false
 
-                                                            println("Username is already in use")
+                                                            signUpPopup = 1
+
+                                                            println("Error creating account")
                                                         }
 
                                                         this.cancel()

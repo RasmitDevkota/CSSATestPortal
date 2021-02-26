@@ -2,6 +2,7 @@ import androidx.compose.foundation.*
 import androidx.compose.material.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -20,6 +21,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.cancel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.util.*
@@ -498,6 +501,35 @@ class Test(_path: String) {
                 mutableStateOf(true)
             }
 
+            var timer by remember {
+                mutableStateOf("60 minutes and 0 seconds")
+            }
+
+            flow {
+                for (time in 3600 downTo 0) {
+                    delay(1000L)
+
+                    if (time <= 0) {
+                        deactivated = true
+
+                        persistenceJob.cancel()
+
+                        currentCoroutineContext().cancel()
+
+                        return@flow
+                    }
+
+                    val minutes = floor(time.toDouble() / 60).toInt()
+                    val seconds = time % 60
+
+                    val timeText = "$minutes minute${if (minutes == 1) "" else "s"} and $seconds second${if (seconds == 1) "" else "s"}"
+
+                    timer = timeText
+
+                    emit(timeText)
+                }
+            }
+
             persistenceJob = GlobalScope.launch {
                 delay(1500)
 
@@ -536,7 +568,7 @@ class Test(_path: String) {
 
             if (active) {
                 Column(Modifier, Arrangement.Center) {
-                    TestTimer(countdownFlow())
+                    Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", fontSize = 30.sp, textAlign = TextAlign.Center)
                 }
 
                 ScrollableColumn(
@@ -615,39 +647,4 @@ class Test(_path: String) {
             this.cancel()
         }
     }
-
-
-    fun countdownFlow() = flow {
-        for (time in 3600 downTo 0) {
-            delay(1000L)
-
-            if (time <= 0) {
-                deactivated = true
-
-                persistenceJob.cancel()
-
-                return@flow
-            }
-
-            val minutes = floor(time.toDouble() / 60).toInt()
-            val seconds = time % 60
-
-            val timeText = "$minutes minute${if (minutes == 1) "" else "s"} and $seconds second${if (seconds == 1) "" else "s"}"
-
-            emit(timeText)
-        }
-    }
-
-    @Composable
-    fun TestTimer(countdown: Flow<String>) {
-        val timer by countdown.collectAsState(initial = "60 minutes and 0 seconds")
-
-        TimerText(timer)
-    }
-
-    @Composable
-    fun TimerText(timer: String) {
-        Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", fontSize = 30.sp, textAlign = TextAlign.Center)
-    }
-
 }

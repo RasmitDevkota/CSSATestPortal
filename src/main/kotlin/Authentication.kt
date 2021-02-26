@@ -79,69 +79,6 @@ class Authentication() {
         }
     }
 
-    fun checkUsername(_username: String): Boolean {
-        username = _username
-
-        val url = URL("https://cssa-backend.herokuapp.com/checkUsername")
-        val con = url.openConnection() as HttpURLConnection
-
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
-
-        con.requestMethod = "POST";
-        con.doOutput = true;
-
-        val data = username
-
-        con.outputStream.use { os ->
-            val input: ByteArray = data.toByteArray()
-            os.write(input, 0, input.size)
-        }
-
-        BufferedReader(
-            InputStreamReader(con.inputStream, "utf-8")
-        ).use { br ->
-            val response = StringBuilder()
-            var responseLine: String?
-            while (br.readLine().also { responseLine = it } != null) {
-                response.append(responseLine!!.trim { it <= ' ' })
-            }
-            return response.toString() != "1"
-        }
-    }
-
-    fun checkEmail(_email: String): Boolean {
-        email = _email
-
-        val url = URL("https://cssa-backend.herokuapp.com/checkEmail")
-        val con = url.openConnection() as HttpURLConnection
-
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
-
-        con.requestMethod = "POST";
-        con.doOutput = true;
-
-        val data = email
-
-
-        con.outputStream.use { os ->
-            val input: ByteArray = data.toByteArray()
-            os.write(input, 0, input.size)
-        }
-
-        BufferedReader(
-            InputStreamReader(con.inputStream, "utf-8")
-        ).use { br ->
-            val response = StringBuilder()
-            var responseLine: String?
-            while (br.readLine().also { responseLine = it } != null) {
-                response.append(responseLine!!.trim { it <= ' ' })
-            }
-            return response.toString() != "1"
-        }
-    }
-
     fun createAccount(_fName: String, _lName: String, _username: String, _email: String, _password: String): ArrayList<Any> {
         username = _username
         email = _email

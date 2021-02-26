@@ -37,7 +37,7 @@ function pageLoad(u) {
 
         window.userDoc = users.doc(user.uid);
 
-        if (window.location.href.includes("competition.html")) {
+        if (window.location.href.includes("dashboard.html")) {
             loadCompetition();
         } else if (window.location.href.includes("test.html")) {
             var urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
