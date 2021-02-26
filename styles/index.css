@@ -20,8 +20,9 @@
     width: 33%;
     height: 50%;
     margin: 1% 0%;
-    padding: 2%;
-    background-color: lightgray;
+    padding: 3%;
+    border: 2px solid lightgrey;
+    border-radius: 20px;
 }
 
 .auth-row {
@@ -29,7 +30,22 @@
     flex-direction: row;
     justify-content: center;
 }
-
+.auth-row > input{
+    font-size: 15px;
+    padding: 10px;
+    width:50%;
+    border: 2px solid lightgrey;
+    border-radius: 5px;
+}
+.auth-row > button{
+    font-size: 15px;
+    padding: 12px;
+    width:50%;
+    border:none;
+    border-radius: 5px;
+    background-color:#0dcaf0;
+    color:white;
+}
 #signin {
     display: flex;
     flex-direction: column;
@@ -44,10 +60,12 @@
     display: none;
     flex-direction: column;
 }
-
+#signup input{
+    margin: 10px;
+}
 #auth-wrapper hr {
     color: black;
-    width: 40%;
+    width: 0%;
 }
 
 #google-row {
@@ -55,7 +73,17 @@
     flex-direction: row;
     justify-content: center;
 }
+#google-row > button{
+    font-size: 15px;
+    background-color: lightgrey;
+    border:none;
+    padding:10px;
+    color:white;
+    border-radius:5px;
+
+}
 
 #auth-wrapper button {
     width: 30%;
 }
+
