@@ -1,7 +1,7 @@
 let currentEvent = "None";
 
 window.addEventListener("load", () => {
-    _("welcome-user").innerHTML = `Welcome, ${user}`
+    // _("welcome-user").innerHTML = `Welcome, ${user.name}`;
 });
 
 function loadCompetition() {

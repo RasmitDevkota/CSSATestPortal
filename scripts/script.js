@@ -17,7 +17,9 @@ db.enablePersistence();
 const users = db.collection("users");
 const tests = db.collection("tests");
 
-firebase.auth().onAuthStateChanged(function (user) {
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
+firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         pageLoad(true);
     } else {
@@ -46,9 +48,7 @@ function pageLoad(u) {
             loadTest(test);
         }
     } else {
-        window.user = null;
-
-        if (!window.location.href.includes("index.html") || window.location.href != "") {
+        if (!window.location.href.includes("index.html") && window.location.href != "") {
             window.location.href = "index.html";
         }
     }

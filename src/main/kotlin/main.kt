@@ -55,7 +55,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
     }
 
     var authenticated by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     var currentPage by remember {
