@@ -20,7 +20,7 @@ class HTTPRequests {
             }
 
             if (responseCode != 200) {
-                println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+                println("Sent '$requestMethod' request to URL: $url; Response Code: $responseCode ($responseMessage)")
 
                 response = "$responseCode|()|$responseMessage|()|"
 
@@ -43,7 +43,7 @@ class HTTPRequests {
         return response
     }
 
-    fun post(_url: String, data: String = "", token: String = ""): String {
+    fun post(_url: String, data: String = "", token: String = "", length: Boolean = false): String {
         var response = ""
 
         val url = _url.replace(" ", "%20")
@@ -53,7 +53,10 @@ class HTTPRequests {
             doOutput = true
 
             setRequestProperty("Content-Type", "application/json")
-            setRequestProperty("Content-Length", "0")
+
+            if (length) {
+                setRequestProperty("Content-Length", "0")
+            }
 
             if (token != "") {
                 setRequestProperty("Authorization", "Bearer $token");
@@ -65,14 +68,12 @@ class HTTPRequests {
                 stream.write(out)
             }
 
+            println("Sent '$requestMethod' request to URL: $url; Response Code: $responseCode ($responseMessage)")
+
             if (responseCode != 200) {
-                println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
-
-                println(data)
-
                 response = "$responseCode|()|$responseMessage|()|"
 
-                inputStream.bufferedReader().use {
+                errorStream.bufferedReader().use {
                     it.lines().forEach { line ->
                         response += line
                     }
@@ -128,7 +129,7 @@ class HTTPRequests {
             doOutput = true
 
             if (responseCode != 200) {
-                println("Sent '$requestMethod' request to URL : $url; Response Code: $responseCode ($responseMessage)")
+                println("Sent '$requestMethod' request to URL: $url; Response Code: $responseCode ($responseMessage)")
             }
 
             inputStream.bufferedReader().use {

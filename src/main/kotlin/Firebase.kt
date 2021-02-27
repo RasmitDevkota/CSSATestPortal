@@ -23,6 +23,8 @@ class Firebase {
 
             val signInResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = signInData)
 
+            println(signInResponse)
+
             when (signInResponse.split("|()|")[0]) {
                 "200" -> {
                     val AuthJson = Gson().fromJson(signInResponse.split("|()|")[2], Auth().javaClass)
@@ -30,17 +32,15 @@ class Firebase {
                     uid = AuthJson.localId
                     userToken = AuthJson.idToken
 
-                    println("Successful authentication")
-
                     return 0
                 }
 
                 else -> {
                     val ErrorJson = Gson().fromJson(signInResponse.split("|()|")[2], Error().javaClass)
 
-                    println(ErrorJson.message)
+                    println(ErrorJson.error.message)
 
-                    return when (ErrorJson.message) {
+                    return when (ErrorJson.error.message) {
                         "MISSING_EMAIL" -> {
                             4
                         }
@@ -91,7 +91,7 @@ class Firebase {
                 else -> {
                     val ErrorJson = Gson().fromJson(signUpResponse.split("|()|")[2], Error().javaClass)
 
-                    when (ErrorJson.message) {
+                    when (ErrorJson.error.message) {
                         "MISSING_EMAIL" -> {
                             return 0
                         }
@@ -139,7 +139,7 @@ class Firebase {
                 else -> {
                     val ErrorJson = Gson().fromJson(getResponse.split("|()|")[2], Error().javaClass)
 
-                    when (ErrorJson.message) {
+                    when (ErrorJson.error.message) {
                         "ABORTED" -> {
                             return "~Error|Looks like you're doing too many actions, please slow down!"
                         }

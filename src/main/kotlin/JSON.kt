@@ -10,6 +10,7 @@ data class BackendCredentials (
 )
 
 data class BackendUser (
+    var code: Int = 1,
     var info: ArrayList<String> = ArrayList()
 )
 
@@ -47,7 +48,7 @@ data class AnswerDocument (
 )
 
 data class Error (
-    val error: ErrorBody
+    val error: ErrorBody = ErrorBody()
 )
 
 data class ErrorBody (

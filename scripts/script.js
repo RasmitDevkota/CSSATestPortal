@@ -17,8 +17,6 @@ db.enablePersistence();
 const users = db.collection("users");
 const tests = db.collection("tests");
 
-firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         pageLoad(true);

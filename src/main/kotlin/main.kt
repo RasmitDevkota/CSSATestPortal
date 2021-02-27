@@ -1,5 +1,4 @@
 import androidx.compose.desktop.AppManager
-import androidx.compose.desktop.AppWindow
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,11 +27,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.MenuBar
-import androidx.compose.ui.zIndex
-import com.firefly.codec.http2.model.HttpMethod
-import com.firefly.kotlin.ext.http.HttpServer
+import com.firefly.`$`
 import kotlinx.coroutines.*
 import org.jetbrains.skija.Image
 import java.awt.image.BufferedImage
@@ -388,7 +383,6 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                     Column (Modifier.align(Alignment.CenterHorizontally)) {
                                                         androidx.compose.material.Text(
                                                             text = when (signUpPopup) {
-                                                                1 -> "There was an error creating your account, please retry after a while or restart the testing portal!"
                                                                 2 -> "That email is already being used by another account, please sign in or use a different email!"
                                                                 3 -> "That username is already being used by another account, please sign in or use a different username!"
                                                                 else -> "Unknown error signing up, please retry after a while or restart the testing portal!"
@@ -459,10 +453,9 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                                     if (trySignIn == 0) {
                                                         authenticated = true
-                                                        signInPopup = 0
-                                                    } else {
-                                                        println("Unknown error occurred")
                                                     }
+
+                                                    signInPopup = trySignIn
                                                 }
 
                                                 this.cancel()
@@ -514,39 +507,110 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                 Divider(color = Color.Gray, thickness = 2.dp, modifier = Modifier.width(250.dp).align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 5.dp))
 
+                                var googlePopup by remember {
+                                    mutableStateOf(0)
+                                }
+
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 5.dp),
                                     onClick = {
                                         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                                            auth.googleHttpServer()
+                                            val authUrl = "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?redirect_uri=https%3A%2F%2FVirtuousExpensiveSymbols.roycea.repl.co%2Fhome.html&response_type=code%20permission%20id_token&scope=openid%20profile%20email&openid.realm&client_id=834594227639-8510j9dnu8k6m9t2li9j55eqc5dira87.apps.googleusercontent.com&ss_domain=https%3A%2F%2Fvirtuousexpensivesymbols.roycea.repl.co&access_type=offline&include_granted_scopes=true&prompt=consent&origin=https%3A%2F%2Fvirtuousexpensivesymbols.roycea.repl.co&gsiwebsdk=2&flowName=GeneralOAuthFlow"
 
-                                            Desktop.getDesktop().browse(URI("https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&scope=openid%20profile&redirect_uri=http%3A%2F%2F127.0.0.1%3A8310%2F&client_id=834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com&flowName=GeneralOAuthFlow"));
+                                            Desktop.getDesktop().browse(URI(authUrl))
                                         }
 
                                         runBlocking {
-                                            val host = "localhost"
-                                            val port = 8081
+                                            `$`.httpServer().router().get("/oauth/:data").handler { ctx ->
+                                                val data = ctx.getPathParameter("data").replace("#####", "/").split("~")
 
-                                            HttpServer {
-                                                router {
-                                                    httpMethod = HttpMethod.GET
-                                                    path = "/get-code/4/:code"
+                                                println(data)
 
-                                                    asyncHandler {
-                                                        val codeId = getPathParameter("code")
+                                                val code = data[0].toInt()
 
-                                                        println(codeId)
+                                                when (code) {
+                                                    0 -> {
+                                                        val email = data[1]
+                                                        val id = data[2]
+                                                        val credential = data[3]
 
-                                                        auth.googleSignIn("4/$codeId")
+                                                        var tryFirebaseAuth = firebaseAuth.authenticate(email, credential)
 
-                                                        end("Done")
+                                                        authenticated = when (tryFirebaseAuth) {
+                                                            0 -> {
+                                                                true
+                                                            }
+
+                                                            6 -> {
+                                                                tryFirebaseAuth = firebaseAuth.create(email, credential)
+
+                                                                when (tryFirebaseAuth) {
+                                                                    2 -> {
+                                                                        tryFirebaseAuth = 2
+
+                                                                        false
+                                                                    }
+
+                                                                    else -> {
+                                                                        tryFirebaseAuth = 1
+
+                                                                        false
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            else -> {
+                                                                false
+                                                            }
+                                                        }
+
+                                                        googlePopup = tryFirebaseAuth
+
+                                                        ctx.end("Sign in successful! You may return to the testing portal now.")
+                                                    }
+
+                                                    else -> {
+                                                        authenticated = false
+
+                                                        googlePopup = code
+
+                                                        ctx.end("Sign in failed! Please restart the testing portal and try again!")
                                                     }
                                                 }
-                                            }.listen(host, port)
+                                            }.listen("localhost", 8090)
                                         }
 
                                         authenticated = true
-                                    }) {
+                                    }
+                                ) {
                                     Text("Google")
+                                }
+
+                                if (googlePopup != 0) {
+                                    Window(
+                                        title = "CSSA Test Portal | Authentication Error",
+                                        icon = loadImageResource("CSSA.png"),
+                                        size = IntSize(450, 195)
+                                    ) {
+                                        Column (Modifier.align(Alignment.CenterHorizontally)) {
+                                            androidx.compose.material.Text(
+                                                text = when (googlePopup) {
+                                                    4 -> "An error occurred with your account, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                                                    6 -> "Unknown error signing in, please retry after a while or restart the testing portal!"
+                                                    9 -> "Sorry, it looks like your account has been disabled! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                                                    else -> "An error occurred with your account, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                                                },
+                                                Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
+                                                fontSize = 15.sp, textAlign = TextAlign.Center
+                                            )
+
+                                            Button(
+                                                onClick = { googlePopup = 0; AppManager.focusedWindow!!.close() },
+                                                Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp),
+                                            ) {
+                                                androidx.compose.material.Text(text = "Ok", fontSize = 15.sp, textAlign = TextAlign.Center)
+                                            }
+                                        }
+                                    }
                                 }
 
                             }

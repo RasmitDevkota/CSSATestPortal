@@ -19,7 +19,7 @@ function auth() {
 }
 
 function getEmail(username) {
-    return "rdatch101@gmail.com" // Change later!
+    
 }
 
 function unauth() {

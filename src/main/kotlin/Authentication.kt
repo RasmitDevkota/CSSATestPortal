@@ -1,14 +1,6 @@
 import com.google.gson.Gson
-import net.jemzart.jsonkraken.JsonKraken
-import net.jemzart.jsonkraken.JsonValue
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import com.sun.net.httpserver.HttpExchange
-import com.sun.net.httpserver.HttpHandler
-import com.sun.net.httpserver.HttpServer
-import java.net.InetSocketAddress
 
 class Authentication() {
     var email: String = ""
@@ -17,15 +9,11 @@ class Authentication() {
     var lName: String = ""
     var password: String = ""
 
-    var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com";
-    var clientSecret = "KZdxDA3r_gF18eCACoFUdapt";
+    var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com" /*"834594227639-b1rc88q102d1q94720v82vet50bal64n.apps.googleusercontent.com"*/
+    var clientSecret = "KZdxDA3r_gF18eCACoFUdapt" /*"2tG7PQqwoQZ4ZOU7gKigy35l"*/
     var redirectUri = "https://127.0.0.1:8310/"
 
     fun manualSignIn(_username: String, _password: String): Int {
-//        if (badInput(arrayListOf(_username, _password))) {
-//            return false
-//        }
-
         username = _username
         password = _password
 
@@ -46,9 +34,7 @@ class Authentication() {
             os.write(input, 0, input.size)
         }
 
-        BufferedReader(
-            InputStreamReader(con.inputStream, "utf-8")
-        ).use { br ->
+        con.inputStream.bufferedReader().use { br ->
             val response = StringBuilder()
             var responseLine: String?
 
@@ -56,25 +42,26 @@ class Authentication() {
                 response.append(responseLine!!.trim { it <= ' ' })
             }
 
-            println(response.toString())
+            val backendUser = Gson().fromJson(response.toString(), BackendUser().javaClass)
 
-            return if (response.toString().toBoolean()) {
-                response.toString().toInt()
-            } else {
-                val backendUser = Gson().fromJson(response.toString(), BackendUser().javaClass)
+            val code = backendUser.code
 
-                println(backendUser.info)
+            return when (code) {
+                0 -> {
+                    val backendData = backendUser.info
+                    email = backendData[0]
+                    username = backendData[1]
+                    fName = backendData[2]
+                    lName = backendData[3]
 
-                email = backendUser.info[0].replace("\"", "")
-                username = backendUser.info[1].replace("\"", "")
-                fName = backendUser.info[2].replace("\"", "")
-                lName = backendUser.info[3].replace("\"", "")
+                    val tryFirebaseAuthenticate = firebaseAuth.authenticate(email, password)
 
-                val tryFirebaseAuthenticate = firebaseAuth.authenticate(email, password)
+                    tryFirebaseAuthenticate
+                }
 
-                println(tryFirebaseAuthenticate)
-
-                tryFirebaseAuthenticate
+                else -> {
+                    code
+                }
             }
         }
     }
@@ -89,11 +76,11 @@ class Authentication() {
         val url = URL("https://cssa-backend.herokuapp.com/registration")
         val con = url.openConnection() as HttpURLConnection
 
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Content-Type", "application/json; utf-8")
+        con.setRequestProperty("Accept", "application/json")
 
-        con.requestMethod = "POST";
-        con.doOutput = true;
+        con.requestMethod = "POST"
+        con.doOutput = true
 
         val data = """
             {
@@ -115,9 +102,7 @@ class Authentication() {
             os.write(input, 0, input.size)
         }
 
-        BufferedReader(
-            InputStreamReader(con.inputStream, "utf-8")
-        ).use { br ->
+        con.inputStream.bufferedReader().use { br ->
             val response = StringBuilder()
             var responseLine: String?
 
@@ -126,67 +111,6 @@ class Authentication() {
             }
 
             return arrayListOf(response.toString() == "1")
-        }
-    }
-
-    fun googleSignIn(code: String) {
-        with(URL("https://oauth2.googleapis.com/token?code=$code&client_id=$clientID&client_secret=$clientSecret&redirect_uri=$redirectUri&grant_type=authorization_code").openConnection() as HttpURLConnection) {
-            requestMethod = "POST"
-            doOutput = true
-
-            setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-            setRequestProperty("Content-Length", "0")
-
-            println("\nSent '$requestMethod' request to URL : $url; Response Code : $responseCode ($responseMessage)")
-
-            inputStream.bufferedReader().use {
-                it.lines().forEach { line ->
-                    println(line)
-                }
-            }
-
-            disconnect()
-        }
-    }
-
-    fun googleHttpServer() {
-        val server: HttpServer = HttpServer.create(InetSocketAddress(8310), 0)
-        server.createContext("/", GoogleHttpHandler())
-        server.executor = null
-        server.start()
-    }
-
-    class GoogleHttpHandler : HttpHandler {
-        override fun handle(t: HttpExchange) {
-            val clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com"
-            val authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
-            val redirectUri = "http://127.0.0.1:8310/"
-
-            val url = URL("$authorizationEndpoint?response_type=code&scope=openid%20profile&redirect_uri=$redirectUri&client_id=$clientID")
-
-            val response = """
-                <!DOCTYPE html>
-                <html>
-                    Loading
-                    
-                    <script>
-                        let url = new URL(window.location.href);
-                        let params = new URLSearchParams(url.search);
-                        window.location.href = "http://localhost:8081/get-code/" + params.get('code');
-                    </script>
-                </html>
-            """.trimIndent()
-
-            with(url.openConnection() as HttpURLConnection) {
-                requestMethod = "GET"
-
-                inputStream.bufferedReader().use {
-                    t.sendResponseHeaders(200, response.length.toLong())
-                    val os = t.responseBody
-                    os.write(response.toByteArray())
-                    os.close()
-                }
-            }
         }
     }
 
