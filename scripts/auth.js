@@ -12,7 +12,6 @@ function auth() {
                 //User DNE
 				alert(this.responseText);
 			} else {
-                console.log(this.responseText);
 			    let valueArray = JSON.parse(this.responseText).info;
                 firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
                     console.log("Signed in!");
