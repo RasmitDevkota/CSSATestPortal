@@ -1,6 +1,7 @@
 # Project exclude paths
 /.gradle/
-/build/
+/build
+/build/**
 # Logs
 logs
 *.log
