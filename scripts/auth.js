@@ -3,7 +3,7 @@ function auth() {
     const pwd = _("si-password").value;
 
     if (!ue.includes("@")) {
-        ue = getEmail(ue);
+        ue = getEmail(ue, pwd);
     }
 
     firebase.auth().signInWithEmailAndPassword(ue, pwd).then(() => {
@@ -18,8 +18,8 @@ function auth() {
     });
 }
 
-function getEmail(username) {
-    
+function getEmail(username, password) {
+    return ""
 }
 
 function unauth() {
