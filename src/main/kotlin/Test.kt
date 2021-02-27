@@ -514,6 +514,8 @@ class Test(_path: String) {
 
                         persistenceJob.cancel()
 
+                        saveAnswers(2)
+
                         currentCoroutineContext().cancel()
 
                         return@flow
@@ -546,21 +548,29 @@ class Test(_path: String) {
 
             persistenceJob.invokeOnCompletion {
                 if (it is CancellationException) {
-                    saveAnswers(2)
-
                     println("Saved all answers!")
 
-                    firestore.Document("users/${firebase.uid}").update(Gson().toJson(firebase.user.apply {
-                        if (this.event1 == path) {
-                            this.event1 = "$path!"
-                        } else if (this.event2 == path) {
-                            this.event2 = "$path!"
-                        } else if (this.event3 == path) {
-                            this.event3 = "$path!"
-                        } else if (this.event4 == path) {
-                            this.event4 = "$path!"
+                    firebase.user.apply {
+                        when {
+                            this.event1 == path -> {
+                                this.event1 = "$path!"
+                            }
+
+                            this.event2 == path -> {
+                                this.event2 = "$path!"
+                            }
+
+                            this.event3 == path -> {
+                                this.event3 = "$path!"
+                            }
+
+                            this.event4 == path -> {
+                                this.event4 = "$path!"
+                            }
                         }
-                    }))
+                    }
+
+                    firestore.Document("users/${firebase.uid}").update(Gson().toJson(firebase.user))
 
                     active = false
                 }
@@ -601,6 +611,8 @@ class Test(_path: String) {
 
                             persistenceJob.cancel()
 
+                            saveAnswers(2)
+
                             active = false
                         }
                     ) {
@@ -628,15 +640,13 @@ class Test(_path: String) {
                 2 -> {
                     answerFields["endTime"] = hashMapOf("stringValue" to "${System.currentTimeMillis()}")
                 }
-
-                else -> {
-                    Questions.forEach {
-                        answerFields["question${it.number}"] = hashMapOf("stringValue" to it.answer)
-                    }
-
-                    answerFields["save$saveIteration"] = hashMapOf("stringValue" to "${System.currentTimeMillis()}")
-                }
             }
+
+            Questions.forEach {
+                answerFields["question${it.number}"] = hashMapOf("stringValue" to it.answer)
+            }
+
+            answerFields["save$saveIteration"] = hashMapOf("stringValue" to "${System.currentTimeMillis()}")
 
             val answerDocument = Gson().toJson(AnswerDocument(answerFields))
 

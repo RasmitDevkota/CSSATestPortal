@@ -25,51 +25,49 @@ class Firebase {
 
             println(signInResponse)
 
-            when (signInResponse.split("|()|")[0]) {
-                "200" -> {
-                    val AuthJson = Gson().fromJson(signInResponse.split("|()|")[2], Auth().javaClass)
+            return if (signInResponse.contains("|()|")) {
+                val ErrorJson = Gson().fromJson(signInResponse.split("|()|")[2], Error().javaClass)
 
-                    uid = AuthJson.localId
-                    userToken = AuthJson.idToken
+                when (ErrorJson.error.message) {
+                    "MISSING_EMAIL" -> {
+                        4
+                    }
 
-                    return 0
-                }
+                    "MISSING_PASSWORD" -> {
+                        5
+                    }
 
-                else -> {
-                    val ErrorJson = Gson().fromJson(signInResponse.split("|()|")[2], Error().javaClass)
+                    "EMAIL_NOT_FOUND" -> {
+                        6
+                    }
 
-                    println(ErrorJson.error.message)
+                    "INVALID_EMAIL" -> {
+                        7
+                    }
 
-                    return when (ErrorJson.error.message) {
-                        "MISSING_EMAIL" -> {
-                            4
-                        }
+                    "INVALID_PASSWORD" -> {
+                        println(password)
 
-                        "MISSING_PASSWORD" -> {
-                            5
-                        }
+                        8
+                    }
 
-                        "EMAIL_NOT_FOUND" -> {
-                            6
-                        }
+                    "USER_DISABLED" -> {
+                        9
+                    }
 
-                        "INVALID_EMAIL" -> {
-                            7
-                        }
-
-                        "INVALID_PASSWORD" -> {
-                            8
-                        }
-
-                        "USER_DISABLED" -> {
-                            9
-                        }
-
-                        else -> {
-                            1
-                        }
+                    else -> {
+                        1
                     }
                 }
+            } else {
+                val AuthJson = Gson().fromJson(signInResponse, Auth().javaClass)
+
+                uid = AuthJson.localId
+                userToken = AuthJson.idToken
+
+                user = User(firestore.get("users/${uid}"))
+
+                0
             }
         }
 
@@ -78,49 +76,47 @@ class Firebase {
 
             val signUpResponse = http.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey", data = signUpData)
 
-            when (signUpResponse.split("|()|")[0]) {
-                "200" -> {
-                    val AuthJson = Gson().fromJson(signUpResponse, Auth().javaClass)
+            return if (signUpResponse.contains("|()|")) {
+                val ErrorJson = Gson().fromJson(signUpResponse.split("|()|")[2], Error().javaClass)
 
-                    uid = AuthJson.localId
-                    userToken = AuthJson.idToken
+                when (ErrorJson.error.message) {
+                    "MISSING_EMAIL" -> {
+                        0
+                    }
 
-                    return 0
-                }
+                    "MISSING_PASSWORD" -> {
+                        0
+                    }
 
-                else -> {
-                    val ErrorJson = Gson().fromJson(signUpResponse.split("|()|")[2], Error().javaClass)
+                    "EMAIL_EXISTS" -> {
+                        2
+                    }
 
-                    when (ErrorJson.error.message) {
-                        "MISSING_EMAIL" -> {
-                            return 0
-                        }
+                    "INVALID_EMAIL" -> {
+                        0
+                    }
 
-                        "MISSING_PASSWORD" -> {
-                            return 0
-                        }
+                    "INVALID_PASSWORD" -> {
+                        0
+                    }
 
-                        "EMAIL_EXISTS" -> {
-                            return 2
-                        }
+                    "TOO_MANY_ATTEMPTS_TRY_LATER" -> {
+                        0
+                    }
 
-                        "INVALID_EMAIL" -> {
-                            return 0
-                        }
-
-                        "INVALID_PASSWORD" -> {
-                            return 0
-                        }
-
-                        "TOO_MANY_ATTEMPTS_TRY_LATER" -> {
-                            return 0
-                        }
-
-                        else -> {
-                            return 0
-                        }
+                    else -> {
+                        0
                     }
                 }
+            } else {
+                val AuthJson = Gson().fromJson(signUpResponse, Auth().javaClass)
+
+                uid = AuthJson.localId
+                userToken = AuthJson.idToken
+
+                user = User(firestore.get("users/${uid}"))
+
+                0
             }
         }
     }
@@ -129,46 +125,40 @@ class Firebase {
         fun get(_path: String): String {
             val getResponse = http.get("https://firestore.googleapis.com/v1beta1/projects/$projectId/databases/(default)/documents/$_path?key=$apiKey&access_token=$userToken", token = userToken)
 
-            when (getResponse.split("|()|")[0]) {
-                "200" -> {
-                    // Parse
+            return if (getResponse.contains("|()|")) {
+                val ErrorJson = Gson().fromJson(getResponse.split("|()|")[2], Error().javaClass)
 
-                    return getResponse.split("|()|")[2]
-                }
+                when (ErrorJson.error.message) {
+                    "ABORTED" -> {
+                        "~Error|Looks like you're doing too many actions, please slow down!"
+                    }
 
-                else -> {
-                    val ErrorJson = Gson().fromJson(getResponse.split("|()|")[2], Error().javaClass)
+                    "INTERNAL", "RESOURCE_EXHAUSTED", "UNAVAILABLE" -> {
+                        "~Error|Looks like there's an error with our database, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                    }
 
-                    when (ErrorJson.error.message) {
-                        "ABORTED" -> {
-                            return "~Error|Looks like you're doing too many actions, please slow down!"
-                        }
+                    "INVALID_ARGUMENT" -> {
+                        "~Error|Looks like there's a problem accessing our database, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                    }
 
-                        "INTERNAL", "RESOURCE_EXHAUSTED", "UNAVAILABLE" -> {
-                            return "~Error|Looks like there's an error with our database, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
-                        }
+                    "NOT_FOUND" -> {
+                        "~Error|Looks like something is missing, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                    }
 
-                        "INVALID_ARGUMENT" -> {
-                            return "~Error|Looks like there's a problem accessing our database, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
-                        }
+                    "PERMISSION_DENIED" -> {
+                        "~Error|Looks like you don't have permission to do this, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
+                    }
 
-                        "NOT_FOUND" -> {
-                            return "~Error|Looks like something is missing, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
-                        }
+                    "UNAUTHENTICATED" -> {
+                        "~Error|Looks like there's a problem with your account, please trying signing out and in again or restart the testing portal!"
+                    }
 
-                        "PERMISSION_DENIED" -> {
-                            return "~Error|Looks like you don't have permission to do this, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
-                        }
-
-                        "UNAUTHENTICATED" -> {
-                            return "~Error|Looks like there's a problem with your account, please trying signing out and in again or restart the testing portal!"
-                        }
-
-                        else -> {
-                            return "~Error|Unknown error occurred, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
-                        }
+                    else -> {
+                        "~Error|Unknown error occurred, please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!"
                     }
                 }
+            } else {
+                getResponse
             }
         }
 
