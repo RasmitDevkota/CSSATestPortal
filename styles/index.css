@@ -17,9 +17,8 @@
     display: flex;
     flex-direction:column;
     width: 20vw;
-    margin: 1% 0%;
     padding: 10px;
-    background-color:rgb(240, 240, 240);
+    background-color:rgb(241, 241, 241);
     border-top:5px solid#0dcaf0;
     
 }
@@ -33,7 +32,7 @@
     font-size: 15px;
     padding: 10px;
     width:75%;
-    margin:0;
+    margin: 5px 3px;
     border: 2px solid lightgrey;
     border-radius: 5px;
 }
@@ -45,6 +44,7 @@
     border-radius: 5px;
     background-color:#0dcaf0;
     color:white;
+    margin-top:7px;
 }
 #signin {
     display: flex;
@@ -52,17 +52,11 @@
     justify-content: center;
 }
 
-#signin > * {
-    margin: 2% 0%;
-}
-
 #signup {
     display: none;
     flex-direction: column;
 }
-#signup input{
-    margin: 10px;
-}
+
 #auth-wrapper hr {
     color: black;
     width: 0%;
