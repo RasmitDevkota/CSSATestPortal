@@ -67,3 +67,19 @@ function display(id) {
     }
 
 }
+
+var googleUser = {};
+gapi.load('auth2', function(){
+  auth2 = gapi.auth2.init({
+    client_id: '834594227639-bk92pnvbohf2kp9t93gncs6h7to0n8mj.apps.googleusercontent.com',
+    cookiepolicy: 'single_host_origin',
+  });
+  attachSignin(document.getElementById('google-row'));
+});
+
+function attachSignin(element) {
+    auth2.attachClickHandler(element, {},
+    function(googleUser) {
+        console.log(googleUser.getBasicProfile());
+    })
+}
