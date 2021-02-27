@@ -43,10 +43,11 @@
     border-radius: 5px;
     background-color:#0dcaf0;
     color:white;
-    margin-top:9px;
+    margin-top:20px;
+    margin-bottom:15px;
 }
 #signin {
-    display: flex;
+    display:flex;
     flex-direction: column;
     justify-content: center;
 }
@@ -57,23 +58,23 @@
 }
 
 #auth-wrapper hr {
-    color: black;
-    width: 0%;
+    color: rgb(255, 255, 255);
+    width: 50%;
 }
 
 #google-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    margin-top:10px;
 }
-#google-row > button{
-    font-size: 15px;
-    background-color: lightgrey;
-    border:none;
-    padding:10px;
-    color:white;
-    border-radius:5px;
-
+#google-row img {
+    width:27px;
+    background-color:white;
+    padding: 10px;
+    border-radius:50%;
+    border: 3px solid lightgrey;
+    cursor:pointer;
 }
 
 #auth-wrapper button {
