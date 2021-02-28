@@ -18,14 +18,32 @@ function auth() {
 
                 window.localStorage.setItem("username", valueArray[1]);
                 
-                firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
+                firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                     console.log("Signed in!");
 
                     window.location.href = "dashboard.html";
                 }).catch((error) => {
-                    console.error(`Error occurred signing in: ${error}`);
+                    if (error.code == "auth/wrong-password") {
+                        firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
+                            user.updatePassword(valueArray[4]).then(function() {
+                                console.log("Success");
+                            }).catch(function(error) {
+                                console.error(error);
+                            });
 
-                    alert(`Error occurred: ${error.message}`);
+                            console.log("Signed in!");
+        
+                            window.location.href = "dashboard.html";
+                        }).catch((error) => {
+                            console.error(`Error occurred signing in: ${error}`);
+
+                            alert(`Error occurred: ${error.message}`);
+                        });
+                    } else {
+                        console.error(`Error occurred signing in: ${error}`);
+
+                        alert(`Error occurred: ${error.message}`);
+                    }
                 });
 			}
 		} 
@@ -49,12 +67,20 @@ function signUp() {
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			if(this.responseText.includes("argon")) {
-                window.localStorage.setItem("username", usr);
+                var hashed = this.responseText;
                 
-                firebase.auth().createUserWithEmailAndPassword(emailC, pwd).then(function () {
-                    firebase.auth().signInWithEmailAndPassword(emailC, pwd).catch(function (error) {
+                firebase.auth().createUserWithEmailAndPassword(emailC, hashed).then(function () {
+                    firebase.auth().signInWithEmailAndPassword(emailC, hashed).then(() => {
+                        console.log("Signed in!");
+                        
+                        window.localStorage.setItem("username", username);
+    
+                        window.location.href = "dashboard.html";
+                    }).catch(function (error) {
                         console.log(error);
                     });
+                }).catch((error) => {
+                    console.log(error);
                 });
 			} else {
 				alert(this.responseText);
@@ -135,14 +161,18 @@ function attachSignin(element) {
 
                             window.localStorage.setItem("username", valueArray[1]);
 
-                            firebase.auth().signInWithEmailAndPassword(profile.getEmail(), valueArray[4]).then(() => {
+                            firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                                 console.log("Signed in!");
-
+            
                                 window.location.href = "dashboard.html";
                             }).catch((error) => {
-                                console.error(`Error occurred signing in: ${error}`);
-
-                                alert(`Error occurred: ${error.message}`);
+                                if (error.code == "auth/wrong-password") {
+                                    alert("There's a small problem with your account, but don't worry, we can fix it very easily!\n\nContact crewcssa@gmail.com or join our Discord at bit.ly/cssa-discord for assistance!")
+                                } else {
+                                    console.error(`Error occurred signing in: ${error}`);
+            
+                                    alert(`Error occurred: ${error.message}`);
+                                }
                             });
                         }
                     }; 
@@ -165,18 +195,20 @@ function attachSignin(element) {
                     xhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
                             if (this.responseText.includes("argon")) {
-                                console.log(this.responseText);
-                                
-                                window.localStorage.setItem("username", username);
+                                var hashed = this.responseText;
 
-                                firebase.auth().signInWithEmailAndPassword(profile.getEmail(), password).then(() => {
-                                    console.log("Signed in!");
+                                firebase.auth().createUserWithEmailAndPassword(profile.getEmail(), hashed).then(function () {
+                                    firebase.auth().signInWithEmailAndPassword(profile.getEmail(), hashed).then(() => {
+                                        console.log("Signed in!");
 
-                                    window.location.href = "dashboard.html";
+                                        window.localStorage.setItem("username", username);
+                    
+                                        window.location.href = "dashboard.html";
+                                    }).catch(function (error) {
+                                        console.log(error);
+                                    });
                                 }).catch((error) => {
-                                    console.error(`Error occurred signing in: ${error}`);
-
-                                    alert(`Error occurred: ${error.message}`);
+                                    console.log(error);
                                 });
                             } else {
                                 alert(this.responseText);
