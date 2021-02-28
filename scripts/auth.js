@@ -135,7 +135,7 @@ function attachSignin(element) {
 
                             window.localStorage.setItem("username", valueArray[1]);
 
-                            firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
+                            firebase.auth().signInWithEmailAndPassword(profile.getEmail(), valueArray[4]).then(() => {
                                 console.log("Signed in!");
 
                                 window.location.href = "dashboard.html";
@@ -165,9 +165,11 @@ function attachSignin(element) {
                     xhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
                             if (this.responseText.includes("argon")) {
+                                console.log(this.responseText);
+                                
                                 window.localStorage.setItem("username", username);
 
-                                firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
+                                firebase.auth().signInWithEmailAndPassword(profile.getEmail(), password).then(() => {
                                     console.log("Signed in!");
 
                                     window.location.href = "dashboard.html";
