@@ -61,13 +61,9 @@ function _(id) {
 }
 
 function display(id) {
-
-
     if (_(id).style.display == "flex") {
-
         _(id).style.display = "none";
     } else {
         _(id).style.display = "flex";
     }
-
 }

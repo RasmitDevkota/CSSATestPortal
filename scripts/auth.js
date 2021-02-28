@@ -25,7 +25,7 @@ function auth() {
                 }).catch((error) => {
                     if (error.code == "auth/wrong-password") {
                         firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
-                            user.updatePassword(valueArray[4]).then(function() {
+                            firebase.auth().currentUser.updatePassword(valueArray[4]).then(function() {
                                 console.log("Success");
                             }).catch(function(error) {
                                 console.error(error);
@@ -129,6 +129,7 @@ gapi.load('auth2', function(){
     client_id: '834594227639-bk92pnvbohf2kp9t93gncs6h7to0n8mj.apps.googleusercontent.com',
     cookiepolicy: 'single_host_origin',
   });
+    
   attachSignin(document.getElementById('google-row'));
 });
 
