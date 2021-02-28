@@ -1,5 +1,5 @@
 let currentEvent = "None";
-let time = 5;
+let time = 3600;
 
 function loadCompetition() {
     userDoc.get().then((doc) => {
