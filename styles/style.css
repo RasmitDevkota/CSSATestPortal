@@ -1,10 +1,19 @@
 * {
     font-family: 'Quicksand', sans-serif;
+    font-size: 1vw;
+}
+
+html {
+    overflow: hidden;
 }
 
 body {
     margin: 0%;
     padding: 0%;
+}
+
+h1 {
+   font-size: 2vw; 
 }
 
 #main {

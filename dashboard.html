@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://apis.google.com/js/api:client.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
 
@@ -23,14 +24,26 @@
     <div id="main">
       <div id="content">
         <div id="sidebar">
-          <span class="material-icons">home</span>
+          <a class="material-icons">home</a>
+
+          <a class="material-icons" onclick="unauth();">logout</a>
         </div>
 
-        <div id="main">
-          <h1 id="welcome-user">Welcome, user!</h1>
+        <div id="dashboard">
+          <div class="dashboard-row">
+            <h1 id="welcome-user">Welcome, user!</h1>
+          </div>
 
-          <div id="competitions">
-            
+          <div class="dashboard-row">
+            <div id="competitions">
+              <h2>My Competitions</h2>
+
+              <br>
+              
+              <h4>First Mini-Competition</h4>
+
+              <br>
+            </div>
           </div>
         </div>
       </div>

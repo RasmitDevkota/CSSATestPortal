@@ -7,7 +7,12 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+    <script src="https://apis.google.com/js/api:client.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
 
@@ -23,26 +28,28 @@
     <div id="main">
       <div id="content">
         <div id="sidebar">
-          <span class="material-icons">home</span>
+          <a class="material-icons" onclick="testRedirect('dashboard');">home</a>
+
+          <a class="material-icons" onclick="testRedirect('logout');">logout</a>
         </div>
 
-        <div id="main">
+        <div id="test">
           <div class="content-row" id="title-row">
             <h1 id="title">Event Name</h1>
           </div>
 
           <div class="content-row" id="details-row">
-            <h2 id="details">UID | Time Remaining</h1>
+            <h5 id="details">UID | Time Remaining</h5>
           </div>
 
           <div class="content-row" id="test-row">
-            <div id="test">
-              
+            <div id="test-container">
+
             </div>
           </div>
 
           <div class="content-row" id="submit-row">
-            <button id="submit">Submit</button>
+            <button id="submit" onclick="submit();">Submit</button>
           </div>
         </div>
       </div>

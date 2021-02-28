@@ -1,9 +1,9 @@
 #content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     width: 100%;
     height: 100%;
+    padding: 10% 0% 20% 0%;
 }
 
 .sub-content {
@@ -15,39 +15,47 @@
 
 #auth-wrapper {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     width: 20vw;
     padding: 10px;
-    background-color:rgb(241, 241, 241);
-    border-top:5px solid#0dcaf0;
+    background-color: rgb(241, 241, 241);
+    border-top: 5px solid #0dcaf0;
 }
 
 .auth-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    margin: 2% 0%;
 }
-.auth-row > input{
-    font-size: 15px;
+
+.auth-row > a {
+    margin-top: 4%;
+}
+
+.auth-row > input {
+    font-size: 1vw;
     padding: 10px;
-    width:75%;
+    width: 75%;
     margin: 5px 3px;
     border: 2px solid lightgrey;
     border-radius: 5px;
 }
-.auth-row > button{
-    font-size: 15px;
+
+.auth-row > button {
+    font-size: 1vw;
     padding: 12px;
-    width:50%;
-    border:none;
+    width: 50%;
+    border: none;
     border-radius: 5px;
-    background-color:#0dcaf0;
-    color:white;
-    margin-top:20px;
-    margin-bottom:15px;
+    background-color: #0dcaf0;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 15px;
 }
+
 #signin {
-    display:flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
 }
@@ -66,15 +74,16 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-top:10px;
+    margin-top: 10px;
 }
+
 #google-row img {
-    width:27px;
-    background-color:white;
+    width: 27px;
+    background-color: white;
     padding: 10px;
-    border-radius:50%;
+    border-radius: 50%;
     border: 3px solid lightgrey;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 #auth-wrapper button {

@@ -70,22 +70,69 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                     .background(Color(66, 133, 244)),
                     Arrangement.spacedBy(30.dp)
                 ) {
+                    var warning by remember {
+                        mutableStateOf(3)
+                    }
+
                     IconButton(modifier = Modifier.padding(top = 10.dp).align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
-                        currentPage = 0
+                        if (deactivated) {
+                            currentPage = 0
+                        } else {
+                            warning = 0
+                        }
                     }) {
                         Icon(bitmap = imageFromResource("Home Icon.png"))
                     }
 
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
-                        currentPage = 1
+                        if (deactivated) {
+                            currentPage = 1
+                        } else {
+                            warning = 1
+                        }
                     }) {
                         Icon(bitmap = imageFromResource("Events Icon.png"))
                     }
 
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
-                        currentPage = 2
+                        if (deactivated) {
+                            currentPage = 2
+                        } else {
+                            warning = 2
+                        }
                     }) {
                         Icon(bitmap = imageFromResource("Settings Icon.png"))
+                    }
+
+                    if (warning != 3) {
+                        Window(
+                            title = "CSSA Test Portal | Authentication Error",
+                            icon = loadImageResource("CSSA.png"),
+                            size = IntSize(450, 195),
+                            onDismissRequest = { warning = 3 }
+                        ) {
+                            Column (Modifier.align(Alignment.CenterHorizontally)) {
+                                androidx.compose.material.Text(
+                                    text = "You're taking a test! If you exit now, your test will submit. Are you sure you want to exit?",
+                                    Modifier.align(Alignment.CenterHorizontally).padding(20.dp),
+                                    fontSize = 15.sp, textAlign = TextAlign.Center
+                                )
+
+                                Button(
+                                    onClick = { currentPage = warning; warning = 3; deactivated = true; AppManager.focusedWindow!!.close() },
+                                    Modifier.align(Alignment.CenterHorizontally).padding(top = 20.dp),
+                                ) {
+                                    androidx.compose.material.Text(text = "Ok", fontSize = 15.sp, textAlign = TextAlign.Center)
+                                }
+
+                                Button(
+                                    onClick = { warning = 3; AppManager.focusedWindow!!.close() },
+                                    Modifier.align(Alignment.CenterHorizontally).padding(top = 50.dp),
+                                ) {
+                                    androidx.compose.material.Text(text = "Cancel", fontSize = 15.sp, textAlign = TextAlign.Center)
+                                }
+                            }
+                        }
                     }
                 }
 

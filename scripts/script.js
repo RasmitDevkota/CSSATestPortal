@@ -17,8 +17,8 @@ db.enablePersistence();
 const users = db.collection("users");
 const tests = db.collection("tests");
 
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
+firebase.auth().onAuthStateChanged((u) => {
+    if (u != null || u != undefined) {
         pageLoad(true);
     } else {
         pageLoad(false);
@@ -37,7 +37,11 @@ function pageLoad(u) {
 
         window.userDoc = users.doc(user.uid);
 
-        if (window.location.href.includes("dashboard.html")) {
+        if (window.location.href.includes("index.html")) {
+            window.location.href = "dashboard.html";
+        } else if (window.location.href.includes("dashboard.html")) {
+            _("welcome-user").innerHTML = `Welcome, ${window.localStorage.getItem("username")}!`;
+
             loadCompetition();
         } else if (window.location.href.includes("test.html")) {
             var urlParams = new URLSearchParams(decodeURIComponent(window.location.search));

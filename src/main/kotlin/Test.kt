@@ -509,12 +509,12 @@ class Test(_path: String) {
                 for (time in 3600 downTo 0) {
                     delay(1000L)
 
-                    if (time <= 0) {
+                    if (time <= 0 || deactivated) {
+                        saveAnswers(2)
+
                         deactivated = true
 
                         persistenceJob.cancel()
-
-                        saveAnswers(2)
 
                         currentCoroutineContext().cancel()
 
@@ -525,6 +525,8 @@ class Test(_path: String) {
                     val seconds = time % 60
 
                     val timeText = "$minutes minute${if (minutes == 1) "" else "s"} and $seconds second${if (seconds == 1) "" else "s"}"
+
+                    println(time)
 
                     timer = timeText
 
@@ -607,11 +609,11 @@ class Test(_path: String) {
 
                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 12.dp),
                         onClick = {
+                            saveAnswers(2)
+
                             deactivated = true
 
                             persistenceJob.cancel()
-
-                            saveAnswers(2)
 
                             active = false
                         }
