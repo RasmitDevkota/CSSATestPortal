@@ -26,8 +26,15 @@ function loadTest(test) {
     var testContainer = _("test-container");
 
     tests.doc(test).collection("questions").get().then((querySnapshot) => {
-        var q = 0;
+
+        var docs = [];
+
         querySnapshot.forEach((doc) => {
+            docs[Number(doc.id.split("question")[1]) - 1] = doc;
+        });
+
+        var q = 0;
+        docs.forEach((doc) => {
             if (q != 0) {
                 testContainer.innerHTML += `<hr>`;
             }
