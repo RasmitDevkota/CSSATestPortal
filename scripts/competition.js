@@ -1,6 +1,22 @@
 let currentEvent = "None";
 let time = 3600;
 
+if (window.location.href.includes("test")) {
+    window.addEventListener('beforeunload', (event) => {
+        if (currentEvent != "None") {
+            event.preventDefault();
+
+            event.returnValue = '';
+        }
+    });
+
+    window.addEventListener('unload', () => {
+        if (currentEvent != "None") {
+            submit(true);
+        }
+    });
+}
+
 function loadCompetition() {
     userDoc.get().then((doc) => {
         for (let e = 1; e < 5; e++) {
@@ -18,6 +34,18 @@ function loadCompetition() {
 var answers = new Map();
 
 function loadTest(test) {
+    userDoc.get().then((doc) => {
+        if (Object.values(doc.data()).includes(test + "!")) {
+            alert("Sorry, you already finished this test!");
+
+            return window.location.href = "dashboard.html";
+        } else if (!Object.values(doc.data()).includes(test)) {
+            alert("Sorry, you don't have this event!");
+
+            return window.location.href = "dashboard.html";
+        }
+    });
+
     currentEvent = test;
 
     _("title").innerHTML = test;
@@ -26,7 +54,6 @@ function loadTest(test) {
     var testContainer = _("test-container");
 
     tests.doc(test).collection("questions").get().then((querySnapshot) => {
-
         var docs = [];
 
         querySnapshot.forEach((doc) => {
@@ -223,9 +250,27 @@ function loadTest(test) {
         console.error(error);
     });
 
-    setTimeout(() => {
-        timer();
-    }, 1000);
+    userDoc.collection("answers").doc(test).get().then((doc) => {
+        console.log(doc.data().time);
+
+        if (doc.data().time != undefined) {
+            time -= (new Date()).getTime() - doc.data().time;
+        } else {
+            let startTime = (new Date()).getTime();
+
+            userDoc.collection("answers").doc(currentEvent).set({
+                time: startTime
+            }, { merge: true }).then(() => {
+                console.log(startTime);
+            }).catch((e) => {
+                console.error(e);
+            });
+        }
+
+        setTimeout(() => {
+            timer();
+        }, 1000);
+    })
 }
 
 function timer() {
@@ -321,6 +366,8 @@ function submit(confirmed = false) {
             console.log(`Submitted ${currentEvent} answers`);
 
             alert(`Successfully submitted the test!`);
+
+            currentEvent = "None";
 
             window.location.href = "dashboard.html";
         }).catch((e) => {
