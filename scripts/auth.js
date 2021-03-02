@@ -15,8 +15,6 @@ function auth() {
 				alert(this.responseText);
 			} else {
                 let valueArray = JSON.parse(this.responseText).info;
-
-                window.localStorage.setItem("username", valueArray[1]);
                 
                 firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                     console.log("Signed in!");
@@ -72,8 +70,6 @@ function signUp() {
                 firebase.auth().createUserWithEmailAndPassword(emailC, hashed).then(function () {
                     firebase.auth().signInWithEmailAndPassword(emailC, hashed).then(() => {
                         console.log("Signed in!");
-                        
-                        window.localStorage.setItem("username", username);
     
                         window.location.href = "dashboard.html";
                     }).catch(function (error) {
@@ -160,8 +156,6 @@ function attachSignin(element) {
                         if (this.readyState == 4 && this.status == 200) {
                             let valueArray = JSON.parse(this.responseText).info;
 
-                            window.localStorage.setItem("username", valueArray[1]);
-
                             firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                                 console.log("Signed in!");
             
@@ -201,8 +195,6 @@ function attachSignin(element) {
                                 firebase.auth().createUserWithEmailAndPassword(profile.getEmail(), hashed).then(function () {
                                     firebase.auth().signInWithEmailAndPassword(profile.getEmail(), hashed).then(() => {
                                         console.log("Signed in!");
-
-                                        window.localStorage.setItem("username", username);
                     
                                         window.location.href = "dashboard.html";
                                     }).catch(function (error) {

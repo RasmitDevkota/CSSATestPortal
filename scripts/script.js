@@ -40,7 +40,7 @@ function pageLoad(u) {
         if (window.location.href.includes("index.html")) {
             window.location.href = "dashboard.html";
         } else if (window.location.href.includes("dashboard.html")) {
-            _("welcome-user").innerHTML = `Welcome, ${window.localStorage.getItem("username")}!`;
+            _("welcome-user").innerHTML = `Welcome, ${getCookie("username")}!`;
 
             loadCompetition();
         } else if (window.location.href.includes("test.html")) {
