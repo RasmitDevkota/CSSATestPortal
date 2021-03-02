@@ -6,15 +6,7 @@ if (window.location.href.includes("test")) {
         if (currentEvent != "None") {
             event.preventDefault();
 
-            event.returnValue = '';
-        }
-    });
-
-    window.addEventListener('unload', () => {
-        if (currentEvent != "None") {
-            submit(true);
-
-            console.log("Submitted automatically");
+            event.returnValue = "";
         }
     });
 }
@@ -25,7 +17,7 @@ function loadCompetition() {
             if (doc.data()[`event${e}`] != "None" && !doc.data()[`event${e}`].includes("!")) {
                 _("competitions").innerHTML += `
                     <div>
-                        <a href="test.html?test=${doc.data()["event" + e]}">\> ${doc.data()["event" + e]}</a>
+                        <a onclick="confirmTest('${doc.data()["event" + e]}')">\> ${doc.data()["event" + e]}</a>
                     </div>
                 `;
             }
@@ -33,10 +25,20 @@ function loadCompetition() {
     });
 }
 
+function confirmTest(event) {
+    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(event)) {
+        window.location.href = `test.html?test=${event}`;
+    } else if (confirm("Are you sure you want to begin this event? Once you start, the timer will start and you won't be able to pause or come back later!")) {
+        window.location.href = `test.html?test=${event}`;
+    }
+}
+
 var answers = new Map();
 
 function loadTest(test) {
     userDoc.get().then((doc) => {
+        console.log(doc.data());
+
         if (Object.values(doc.data()).includes(test + "!")) {
             alert("Sorry, you already finished this test!");
 
@@ -45,6 +47,22 @@ function loadTest(test) {
             alert("Sorry, you don't have this event!");
 
             return window.location.href = "dashboard.html";
+        } else if (!["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+            let data = {};
+    
+            let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
+    
+            console.log(finishedEvent);
+    
+            data[finishedEvent] = test + "!";
+    
+            userDoc.set(data, { merge: true }).then(() => {
+                console.log(`Successfully locked user in!`);
+            }).catch((e) => {
+                console.error(e);
+        
+                alert("Error occurred accessing database, please refresh the page and try again!");
+            });
         }
     });
 
@@ -271,11 +289,13 @@ function loadTest(test) {
                     console.error(e);
                 });
             }
-
-            setTimeout(() => {
-                timer();
-            }, 1000);
         });
+
+        setTimeout(() => {
+            console.log("hello");
+
+            timer();
+        }, 1000);
     }
 }
 
@@ -299,6 +319,9 @@ function timer() {
         return setTimeout(timer, 1000);
     }
 }
+
+var saved = false;
+var saveTimestamp = 0;
 
 function answer(id, answer) {
     if (id.includes("optionA")) {
@@ -334,6 +357,12 @@ function answer(id, answer) {
     }
 
     console.log(answers);
+
+    saved = false;
+
+    _("saveStatus").innerHTML = `Not Saved | <a onclick="manualSave()">Save</a>`;
+
+    _("manualSave").style.display = "flex";
 }
 
 function saveAnswers() {
@@ -345,11 +374,24 @@ function saveAnswers() {
 
     userDoc.collection("answers").doc(currentEvent).set(data, { merge: true }).then(() => {
         console.log(`Saved ${currentEvent} answers`);
+
+        saved = true;
+        saveTimestamp = (new Date()).getTime();
+
+        _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
     }).catch((e) => {
         console.error(e);
 
         alert("Error occurred saving answers, please refresh the page and try again!");
     });
+}
+
+function manualSave() {
+    if ((new Date()).getTime() - saveTimestamp > 30000) {
+        saveAnswers();
+    } else {
+        alert(`Sorry, please wait ${Math.ceil((30000 - ((new Date()).getTime() - saveTimestamp))/1000)} more seconds before manually saving again!`);
+    }
 }
 
 function submit(confirmed = false) {
@@ -359,33 +401,7 @@ function submit(confirmed = false) {
         }
     }
 
-    userDoc.get().then((doc) => {
-        let data = {};
-
-        let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === currentEvent);
-
-        data[finishedEvent] = currentEvent + "!";
-
-        saveAnswers();
-
-        userDoc.set(data, { merge: true }).then(() => {
-            console.log(`Submitted ${currentEvent} answers`);
-
-            alert(`Successfully submitted the test!`);
-
-            currentEvent = "None";
-
-            window.location.href = "dashboard.html";
-        }).catch((e) => {
-            console.error(e);
-    
-            alert("Error occurred submitting answers, please refresh the page and try again!");
-        });
-    }).catch((e) => {
-        console.error(e);
-
-        alert("Error occurred submitting answers, please refresh the page and try again!");
-    });
+    saveAnswers();
 }
 
 function testRedirect(dest) {

@@ -43,7 +43,7 @@
 }
 
 #title-row {
-    height: 8%;
+    height: 6%;
 }
 
 #details-row {
@@ -52,8 +52,8 @@
 }
 
 #test-row {
-    height: 85%;
-    padding: 2% 0%;
+    height: 80%;
+    padding: 1% 0%;
 }
 
 #test-container {
@@ -90,7 +90,6 @@
     box-shadow: none;
 }
 
-
 .fitb-answer {
     margin: 0% 1%;
 }
@@ -112,9 +111,11 @@
 }
 
 #submit-row {
-    height: 8%;
+    height: 6%;
 }
 
 #submit {
     height: 2.02vw;
+    border: none;
+    background-color: #279af1;
 }
