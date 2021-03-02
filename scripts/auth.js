@@ -18,12 +18,13 @@ function auth() {
                 
                 firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                     console.log("Signed in!");
-
+                    setCookie("username") = valueArray[1];
                     window.location.href = "dashboard.html";
                 }).catch((error) => {
                     if (error.code == "auth/wrong-password") {
                         firebase.auth().signInWithEmailAndPassword(valueArray[0], pwd).then(() => {
                             firebase.auth().currentUser.updatePassword(valueArray[4]).then(function() {
+                                setCookie("username") = valueArray[1];
                                 console.log("Success");
                             }).catch(function(error) {
                                 console.error(error);
@@ -70,7 +71,7 @@ function signUp() {
                 firebase.auth().createUserWithEmailAndPassword(emailC, hashed).then(function () {
                     firebase.auth().signInWithEmailAndPassword(emailC, hashed).then(() => {
                         console.log("Signed in!");
-    
+                        setCookie("username") = usr;
                         window.location.href = "dashboard.html";
                     }).catch(function (error) {
                         console.log(error);
