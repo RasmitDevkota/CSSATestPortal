@@ -36,7 +36,7 @@ function confirmTest(event) {
 var answers = new Map();
 
 function loadTest(test) {
-    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes()) {
+    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
         _("submit-row").style.display = "none";
     }
 
