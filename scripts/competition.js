@@ -53,30 +53,32 @@ function loadTest(test) {
     userDoc.get().then((doc) => {
         console.log(doc.data());
 
-        if (Object.values(doc.data()).includes(test + "!")) {
-            alert("Sorry, you already finished this test!");
+        if (test != "CTFSubmissions") {
+            if (Object.values(doc.data()).includes(test + "!")) {
+                alert("Sorry, you already finished this test!");
 
-            return window.location.href = "dashboard.html";
-        } else if (!Object.values(doc.data()).includes(test)) {
-            alert("Sorry, you don't have this event!");
+                return window.location.href = "dashboard.html";
+            } else if (!Object.values(doc.data()).includes(test)) {
+                alert("Sorry, you don't have this event!");
 
-            return window.location.href = "dashboard.html";
-        } else if (!["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-            let data = {};
+                return window.location.href = "dashboard.html";
+            } else if (!["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+                let data = {};
     
-            let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
+                let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
     
-            console.log(finishedEvent);
+                console.log(finishedEvent);
     
-            data[finishedEvent] = test + "!";
+                data[finishedEvent] = test + "!";
     
-            userDoc.set(data, { merge: true }).then(() => {
-                console.log(`Successfully locked user in!`);
-            }).catch((e) => {
-                console.error(e);
+                userDoc.set(data, { merge: true }).then(() => {
+                    console.log(`Successfully locked user in!`);
+                }).catch((e) => {
+                    console.error(e);
         
-                alert("Error occurred accessing database, please refresh the page and try again!");
-            });
+                    alert("Error occurred accessing database, please refresh the page and try again!");
+                });
+            }
         }
     });
 
@@ -306,8 +308,6 @@ function loadTest(test) {
         });
 
         setTimeout(() => {
-            console.log("hello");
-
             timer();
         }, 1000);
     }
