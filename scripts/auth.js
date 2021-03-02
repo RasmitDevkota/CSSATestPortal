@@ -160,7 +160,8 @@ function attachSignin(element) {
                             firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                                 console.log("Signed in!");
                                 setCookie("username") = valueArray[1];
-                                window.location.href = "dashboard.html";
+                                
+                                //window.location.href = "dashboard.html";
                             }).catch((error) => {
                                 if (error.code == "auth/wrong-password") {
                                     alert("There's a small problem with your account, but don't worry, we can fix it very easily!\n\nContact crewcssa@gmail.com or join our Discord at bit.ly/cssa-discord for assistance!")
