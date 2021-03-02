@@ -254,8 +254,10 @@ function loadTest(test) {
         _("details").innerHTML = `UID: ${user.uid} | Deadline: March 31st, 11:59 PM`;
     } else {
         userDoc.collection("answers").doc(test).get().then((doc) => {
-            if (doc.data().time != undefined) {
-                time -= (new Date()).getTime() - doc.data().time;
+            if (doc.exists) {
+                if (doc.data().time != undefined) {
+                    time -= (new Date()).getTime() - doc.data().time;
+                }
             } else {
                 let startTime = (new Date()).getTime();
 
