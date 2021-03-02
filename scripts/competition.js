@@ -250,27 +250,31 @@ function loadTest(test) {
         console.error(error);
     });
 
-    userDoc.collection("answers").doc(test).get().then((doc) => {
-        console.log(doc.data().time);
+    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+        _("details").innerHTML = `UID: ${user.uid} | Deadline: March 31st, 11:59 PM`;
+    } else {
+        userDoc.collection("answers").doc(test).get().then((doc) => {
+            console.log(doc.data().time);
 
-        if (doc.data().time != undefined) {
-            time -= (new Date()).getTime() - doc.data().time;
-        } else {
-            let startTime = (new Date()).getTime();
+            if (doc.data().time != undefined) {
+                time -= (new Date()).getTime() - doc.data().time;
+            } else {
+                let startTime = (new Date()).getTime();
 
-            userDoc.collection("answers").doc(currentEvent).set({
-                time: startTime
-            }, { merge: true }).then(() => {
-                console.log(startTime);
-            }).catch((e) => {
-                console.error(e);
-            });
-        }
+                userDoc.collection("answers").doc(currentEvent).set({
+                    time: startTime
+                }, { merge: true }).then(() => {
+                    console.log(startTime);
+                }).catch((e) => {
+                    console.error(e);
+                });
+            }
 
-        setTimeout(() => {
-            timer();
-        }, 1000);
-    })
+            setTimeout(() => {
+                timer();
+            }, 1000);
+        });
+    }
 }
 
 function timer() {
