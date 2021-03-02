@@ -365,7 +365,7 @@ function answer(id, answer) {
     _("manualSave").style.display = "flex";
 }
 
-function saveAnswers() {
+function saveAnswers(finished = false) {
     const data = {};
 
     answers.forEach((answer, question) => {
@@ -375,10 +375,19 @@ function saveAnswers() {
     userDoc.collection("answers").doc(currentEvent).set(data, { merge: true }).then(() => {
         console.log(`Saved ${currentEvent} answers`);
 
-        saved = true;
-        saveTimestamp = (new Date()).getTime();
+        if (finished) {
+            alert(`Successfully submitted the test!`);
 
-        _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
+            currentEvent = "None";
+
+            window.location.href = "dashboard.html";
+        } else {
+
+            saved = true;
+            saveTimestamp = (new Date()).getTime();
+
+            _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
+        }
     }).catch((e) => {
         console.error(e);
 
@@ -401,7 +410,9 @@ function submit(confirmed = false) {
         }
     }
 
-    saveAnswers();
+    saveAnswers(true);
+
+    console.log(`Submitted ${currentEvent} answers`);
 }
 
 function testRedirect(dest) {
