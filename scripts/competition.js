@@ -13,6 +13,8 @@ if (window.location.href.includes("test")) {
     window.addEventListener('unload', () => {
         if (currentEvent != "None") {
             submit(true);
+
+            console.log("Submitted automatically");
         }
     });
 }
