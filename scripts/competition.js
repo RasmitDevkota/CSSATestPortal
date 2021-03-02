@@ -361,8 +361,6 @@ function answer(id, answer) {
     saved = false;
 
     _("saveStatus").innerHTML = `Not Saved | <a onclick="manualSave()">Save</a>`;
-
-    _("manualSave").style.display = "flex";
 }
 
 function saveAnswers(finished = false) {
