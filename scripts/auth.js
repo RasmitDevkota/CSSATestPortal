@@ -50,12 +50,12 @@ function auth() {
 }
 
 function signUp() {
+   
 	let emailC = document.getElementById("su-email").value;
 	var usr = document.getElementById("su-username").value;
 	var fName = document.getElementById("su-firstname").value;
 	var lName = document.getElementById("su-lastname").value;
     var pwd = document.getElementById("su-pwd").value;
-    
     var values = { Email: emailC, Username: usr, First: fName, Last: lName, Password: pwd, Google: "-" };    
     
 	var xhttp = new XMLHttpRequest();
@@ -67,12 +67,12 @@ function signUp() {
 		if (this.readyState == 4 && this.status == 200) {
 			if(this.responseText.includes("argon")) {
                 var hashed = this.responseText;
-                
                 firebase.auth().createUserWithEmailAndPassword(emailC, hashed).then(function () {
                     firebase.auth().signInWithEmailAndPassword(emailC, hashed).then(() => {
                         console.log("Signed in!");
+                        alert(usr);
                         setCookie('username',usr,365);
-                        window.location.href = "dashboard.html";
+                        //window.location.href = "dashboard.html";
                     }).catch(function (error) {
                         console.log(error);
                     });
@@ -80,7 +80,7 @@ function signUp() {
                     console.log(error);
                 });
 			} else {
-				alert(this.responseText);
+			//	alert(this.responseText);
 			}
 		} 
 	};  
