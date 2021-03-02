@@ -217,7 +217,7 @@ function loadTest(test) {
                     question += `
                             </div>
                         </div>
-                    `;
+                    `;  
 
                     testContainer.innerHTML += question;
                     break;
@@ -230,9 +230,9 @@ function loadTest(test) {
                             <div>
                                 ${q}. (${data.value} point${(data.value > 1) ? "s" : ""})
                                 &nbsp;
-                                ${data.text.split("|~~~~|")[0]}
-                                <input type="text" class="fitb-answer" id="${doc.id}-blank" onchange="answer(this.id, this.value)">
-                                ${data.text.split("|~~~~|")[1]}
+                                <label>${data.text.split("|~~~~|")[0]}</label>
+                                <input type="text" class="fitb-answer" style="height: 30px" id="${doc.id}-blank" onchange="answer(this.id, this.value)">
+                                <label>${data.text.split("|~~~~|")[1]}</label>
                             </div>
                     `;
                     

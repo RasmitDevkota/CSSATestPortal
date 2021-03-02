@@ -90,10 +90,6 @@
     box-shadow: none;
 }
 
-.fitb > div {
-    display: flex;
-    flex-direction: row;
-}
 
 .fitb-answer {
     margin: 0% 1%;
