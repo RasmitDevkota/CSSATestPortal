@@ -36,6 +36,10 @@ function confirmTest(event) {
 var answers = new Map();
 
 function loadTest(test) {
+    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes()) {
+        _("submit-row").style.display = "none";
+    }
+
     userDoc.get().then((doc) => {
         console.log(doc.data());
 
@@ -402,7 +406,7 @@ function manualSave() {
 }
 
 function submit(confirmed = false) {
-    if (!confirmed) {
+    if (!confirmed || ["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
         if (!confirm("Are you sure you want to submit the test? You won't be able to access it again!")) {
             return;
         }
@@ -414,7 +418,21 @@ function submit(confirmed = false) {
 }
 
 function testRedirect(dest) {
-    if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
+    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
+        submit(true);
+
+        if (dest == "dashboard") {
+            window.location.href = "dashboard.html";
+        } else {
+            if (firebase.auth().currentUser != null) {
+                firebase.auth().signOut();
+            }
+    
+            if (!window.location.href.includes("index.html") || window.location.href != "") {
+                window.location.href = "index.html";
+            }
+        }
+    } else if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
         submit(true);
 
         if (dest == "dashboard") {
