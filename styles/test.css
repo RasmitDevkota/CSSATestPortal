@@ -110,6 +110,14 @@
     background: #555;
 }
 
+#saveStatus > a {
+    text-decoration: underline;
+}
+
+#saveStatus > a:hover {
+    cursor: pointer;
+}
+
 #submit-row {
     height: 6%;
 }
