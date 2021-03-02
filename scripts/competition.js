@@ -22,6 +22,16 @@ function loadCompetition() {
                 `;
             }
         }
+
+        if (doc.data()[`ctf`] != undefined) {
+            if (doc.data()[`ctf`] == true) {
+                _("competitions").innerHTML += `
+                    <div>
+                        <a onclick="confirmTest('CTFSubmissions')">\> CTF Submissions</a>
+                    </div>
+                `;
+            }
+        }
     });
 }
 
