@@ -159,7 +159,7 @@ function attachSignin(element) {
 
                             firebase.auth().signInWithEmailAndPassword(valueArray[0], valueArray[4]).then(() => {
                                 console.log("Signed in!");
-            
+                                setCookie("username") = valueArray[1];
                                 window.location.href = "dashboard.html";
                             }).catch((error) => {
                                 if (error.code == "auth/wrong-password") {
@@ -196,7 +196,7 @@ function attachSignin(element) {
                                 firebase.auth().createUserWithEmailAndPassword(profile.getEmail(), hashed).then(function () {
                                     firebase.auth().signInWithEmailAndPassword(profile.getEmail(), hashed).then(() => {
                                         console.log("Signed in!");
-                    
+                                        setCookie("username") = username;
                                         window.location.href = "dashboard.html";
                                     }).catch(function (error) {
                                         console.log(error);
