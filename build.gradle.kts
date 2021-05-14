@@ -3,8 +3,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.20"
-    id("org.jetbrains.compose") version "0.2.0-build132"
+    kotlin("jvm") version "1.4.30"
+    id("org.jetbrains.compose") version "0.3.1"
 }
 
 group = "alientech"
@@ -25,6 +25,9 @@ dependencies {
     implementation("com.fireflysource:firefly-kotlin-ext:4.9.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     implementation("com.google.code.gson:gson:2.8.6")
+    implementation("androidx.compose.material:material-icons-extended-desktop:1.0.0-beta06")
+    implementation("androidx.compose.foundation:foundation:1.0.0-beta06")
+    implementation("org.slf4j:slf4j-simple:1.6.1")
 }
 
 tasks.withType<KotlinCompile>() {
@@ -35,10 +38,10 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Msi)
 
             packageName = "CSSA Test Portal"
-            version = "0.3"
+            packageVersion = "0.4.0"
             description = "Test portal application for CSSA"
             copyright = "© 2020 CSSA. All rights reserved."
             vendor = "CSSA"

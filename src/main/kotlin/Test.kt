@@ -1,8 +1,10 @@
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.material.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -20,12 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.cancel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.io.File
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.floor
@@ -583,9 +581,11 @@ class Test(_path: String) {
                     Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", fontSize = 30.sp, textAlign = TextAlign.Center)
                 }
 
-                ScrollableColumn(
-                    scrollState = rememberScrollState(),
-                    modifier = Modifier.fillMaxHeight().border(2.dp, Color.Black).padding(10.dp),
+                Column(// ScrollableColumn(
+//                    scrollState = rememberScrollState(),
+                    modifier = Modifier.fillMaxHeight().border(2.dp, Color.Black).padding(10.dp).scrollable(
+                        ScrollableState { _: Float -> 10.0f }, Orientation.Vertical
+                    ),
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     Questions.forEach {
@@ -596,6 +596,7 @@ class Test(_path: String) {
 
                             Image(
                                 bitmap = image,
+                                contentDescription = "Question ${it.number} Image",
                                 modifier = Modifier.fillMaxWidth(0.2f)
                             )
                         }

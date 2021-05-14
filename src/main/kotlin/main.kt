@@ -2,20 +2,24 @@ import androidx.compose.desktop.AppManager
 import androidx.compose.desktop.Window
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.CoreTextField
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.imageFromResource
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.ImeOptions
 import androidx.compose.ui.text.input.TextFieldValue
@@ -30,11 +34,11 @@ import androidx.compose.ui.unit.sp
 import com.firefly.`$`
 import kotlinx.coroutines.*
 import org.jetbrains.skija.Image
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import java.awt.Desktop
+import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URI
+import javax.imageio.ImageIO
 
 var auth = Authentication()
 var firebase = Firebase()
@@ -81,7 +85,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             warning = 0
                         }
                     }) {
-                        Icon(bitmap = imageFromResource("Home Icon.png"))
+                        Icon(painter = svgResource("home-icon.svg"), null, modifier = Modifier.size(50.dp, 50.dp))
                     }
 
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
@@ -91,7 +95,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             warning = 1
                         }
                     }) {
-                        Icon(bitmap = imageFromResource("Events Icon.png"))
+                        Icon(painter = svgResource("assignment-icon.svg"), null, modifier = Modifier.size(50.dp, 50.dp))
                     }
 
                     IconButton(modifier = Modifier.align(Alignment.CenterHorizontally).scale(1.0f), onClick = {
@@ -101,7 +105,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                             warning = 2
                         }
                     }) {
-                        Icon(bitmap = imageFromResource("Settings Icon.png"))
+                        Icon(painter = svgResource("settings-icon.svg"), null, modifier = Modifier.size(50.dp, 50.dp))
                     }
 
                     if (warning != 3) {
@@ -152,24 +156,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
 
-                                Text("First Mini-Competition", fontSize = 20.sp)
-
-                                if (tests.size == 0) {
-                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-                                    eventSequence.forEach {
-                                        tests[it.value] = Test(it.value)
-                                    }
-                                }
-
-                                tests.forEach { (event, _) ->
-                                    TextButton(onClick = {
-                                        currentPage = 3
-                                        test = event
-                                    }) {
-                                        Text(event, color = Color.Black)
-                                    }
-                                }
+//                                Text("First Mini-Competition", fontSize = 20.sp)
+//
+//                                if (tests.size == 0) {
+//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+//                                    eventSequence.forEach {
+//                                        tests[it.value] = Test(it.value)
+//                                    }
+//                                }
+//
+//                                tests.forEach { (event, _) ->
+//                                    TextButton(onClick = {
+//                                        currentPage = 3
+//                                        test = event
+//                                    }) {
+//                                        Text(event, color = Color.Black)
+//                                    }
+//                                }
 
                             }
 
@@ -186,24 +190,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .background(Color(243, 243, 243))
                             ) {
 
-                                Text("First Mini-Competition", fontSize = 20.sp)
-
-                                if (tests.size == 0) {
-                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-                                    eventSequence.forEach {
-                                        tests[it.value] = Test(it.value)
-                                    }
-                                }
-
-                                tests.forEach { (event, _) ->
-                                    TextButton(onClick = {
-                                        currentPage = 3
-                                        test = event
-                                    }) {
-                                        Text(event, color = Color.Black)
-                                    }
-                                }
+//                                Text("First Mini-Competition", fontSize = 20.sp)
+//
+//                                if (tests.size == 0) {
+//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+//                                    eventSequence.forEach {
+//                                        tests[it.value] = Test(it.value)
+//                                    }
+//                                }
+//
+//                                tests.forEach { (event, _) ->
+//                                    TextButton(onClick = {
+//                                        currentPage = 3
+//                                        test = event
+//                                    }) {
+//                                        Text(event, color = Color.Black)
+//                                    }
+//                                }
 
                             }
 
@@ -682,6 +686,14 @@ fun imageFromFile(file: File): ImageBitmap {
     return Image.makeFromEncoded(file.readBytes()).asImageBitmap()
 }
 
+//val quicksand = FontFamily(
+//    androidx.compose.ui.text.platform.Font(
+//        file = File("Quicksand-Medium.ttf"),
+//        weight = FontWeight.Normal,
+//        style = FontStyle.Normal
+//    )
+//)
+
 @Composable
 fun Text(
     text: String,
@@ -690,7 +702,7 @@ fun Text(
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
-    fontFamily: FontFamily = fontFamily(androidx.compose.ui.text.platform.font("Quicksand", "Quicksand-Medium.ttf")),
+    fontFamily: FontFamily = FontFamily.Default,
     letterSpacing: TextUnit = TextUnit.Unspecified,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
@@ -699,7 +711,7 @@ fun Text(
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = AmbientTextStyle.current
+    style: TextStyle = TextStyle.Default
 ) {
     Text(
         AnnotatedString(text),
@@ -730,7 +742,7 @@ fun QuestionText(
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
-    fontFamily: FontFamily = fontFamily(androidx.compose.ui.text.platform.font("Quicksand", "Quicksand-Medium.ttf")),
+    fontFamily: FontFamily = FontFamily.Default,
     letterSpacing: TextUnit = TextUnit.Unspecified,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
@@ -739,7 +751,7 @@ fun QuestionText(
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = AmbientTextStyle.current
+    style: TextStyle = TextStyle.Default
 ) {
     Text(
         AnnotatedString(text),
@@ -766,26 +778,37 @@ fun QuestionText(
 @Composable
 fun QuestionField(
     value: TextFieldValue,
-    modifier: Modifier = Modifier,
     onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
     textStyle: TextStyle = TextStyle.Default,
-    onImeActionPerformed: (ImeAction) -> Unit = {},
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
-    cursorColor: Color = Color.Black,
-    softWrap: Boolean = true,
-    imeOptions: ImeOptions = ImeOptions.Default
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    cursorBrush: Brush = SolidColor(Color.Black),
+    decorationBox: @Composable (innerTextField: @Composable () -> Unit) -> Unit =
+        @Composable { innerTextField -> innerTextField() }
 ) {
-    CoreTextField(value,
-        modifier.border(1.dp, Color.Black, RoundedCornerShape(2.dp)),
+    BasicTextField(
+        value,
         onValueChange,
+        modifier.border(1.dp, Color.Black, RoundedCornerShape(2.dp)),
+        enabled,
+        readOnly,
         textStyle,
-        onImeActionPerformed,
+        keyboardOptions,
+        keyboardActions,
+        singleLine,
+        maxLines,
         visualTransformation,
         onTextLayout,
-        onTextInputStarted,
-        cursorColor,
-        softWrap,
-        imeOptions)
+        interactionSource,
+        cursorBrush,
+        decorationBox
+    )
 }
