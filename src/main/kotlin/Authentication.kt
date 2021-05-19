@@ -10,8 +10,8 @@ class Authentication() {
     var password: String = ""
     var hashedPassword: String = ""
 
-    var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com" /*"834594227639-b1rc88q102d1q94720v82vet50bal64n.apps.googleusercontent.com"*/
-    var clientSecret = "KZdxDA3r_gF18eCACoFUdapt" /*"2tG7PQqwoQZ4ZOU7gKigy35l"*/
+    var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com"
+    var clientSecret = "KZdxDA3r_gF18eCACoFUdapt"
     var redirectUri = "https://127.0.0.1:8310/"
     val authUrl = "https://backend.cssa.dev"
 
@@ -46,9 +46,7 @@ class Authentication() {
 
             val backendUser = Gson().fromJson(response.toString(), BackendUser().javaClass)
 
-            val code = backendUser.code
-
-            return when (code) {
+            return when (val code = backendUser.code) {
                 0 -> {
                     val backendData = backendUser.info
                     email = backendData[0]

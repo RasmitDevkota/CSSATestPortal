@@ -16,12 +16,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.text.*
-import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.ImeOptions
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -156,24 +153,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
 
-//                                Text("First Mini-Competition", fontSize = 20.sp)
-//
-//                                if (tests.size == 0) {
-//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-//                                    eventSequence.forEach {
-//                                        tests[it.value] = Test(it.value)
-//                                    }
-//                                }
-//
-//                                tests.forEach { (event, _) ->
-//                                    TextButton(onClick = {
-//                                        currentPage = 3
-//                                        test = event
-//                                    }) {
-//                                        Text(event, color = Color.Black)
-//                                    }
-//                                }
+                                Text("First Mini-Competition", fontSize = 20.sp)
+
+                                if (tests.size == 0) {
+                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+                                    eventSequence.forEach {
+                                        tests[it.value] = Test(it.value)
+                                    }
+                                }
+
+                                tests.forEach { (event, _) ->
+                                    TextButton(onClick = {
+                                        currentPage = 3
+                                        test = event
+                                    }) {
+                                        Text(event, color = Color.Black)
+                                    }
+                                }
 
                             }
 
@@ -190,24 +187,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .background(Color(243, 243, 243))
                             ) {
 
-//                                Text("First Mini-Competition", fontSize = 20.sp)
-//
-//                                if (tests.size == 0) {
-//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-//                                    eventSequence.forEach {
-//                                        tests[it.value] = Test(it.value)
-//                                    }
-//                                }
-//
-//                                tests.forEach { (event, _) ->
-//                                    TextButton(onClick = {
-//                                        currentPage = 3
-//                                        test = event
-//                                    }) {
-//                                        Text(event, color = Color.Black)
-//                                    }
-//                                }
+                                Text("First Mini-Competition", fontSize = 20.sp)
+
+                                if (tests.size == 0) {
+                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+                                    eventSequence.forEach {
+                                        tests[it.value] = Test(it.value)
+                                    }
+                                }
+
+                                tests.forEach { (event, _) ->
+                                    TextButton(onClick = {
+                                        currentPage = 3
+                                        test = event
+                                    }) {
+                                        Text(event, color = Color.Black)
+                                    }
+                                }
 
                             }
 
@@ -481,7 +478,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     TextField(
                                         modifier = Modifier.align(Alignment.CenterHorizontally),
                                         value = username,
-                                        onValueChange = { username = it },
+                                        onValueChange = { username = it }
                                     )
 
                                     Text("Password", textAlign = TextAlign.Left)
@@ -489,24 +486,30 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     TextField(
                                         modifier = Modifier.align(Alignment.CenterHorizontally),
                                         value = password,
-                                        onValueChange = { password = it },
+                                        onValueChange = { password = it }
                                     )
 
                                     Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 5.dp, 0.dp, 0.dp),
                                         onClick = {
                                             GlobalScope.launch {
-                                                if (username == "") {
-                                                    signInPopup = 2
-                                                } else if (password == "") {
-                                                    signInPopup = 3
-                                                } else {
-                                                    val trySignIn = auth.manualSignIn(username, password)
-
-                                                    if (trySignIn == 0) {
-                                                        authenticated = true
+                                                signInPopup = when {
+                                                    username == "" -> {
+                                                        2
                                                     }
 
-                                                    signInPopup = trySignIn
+                                                    password == "" -> {
+                                                        3
+                                                    }
+
+                                                    else -> {
+                                                        val trySignIn = auth.manualSignIn(username, password)
+
+                                                        if (trySignIn == 0) {
+                                                            authenticated = true
+                                                        }
+
+                                                        trySignIn
+                                                    }
                                                 }
 
                                                 this.cancel()
