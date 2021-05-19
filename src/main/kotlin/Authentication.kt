@@ -15,6 +15,7 @@ class Authentication() {
     var redirectUri = "https://127.0.0.1:8310/"
     val authUrl = "https://backend.cssa.dev"
 
+
     fun manualSignIn(_username: String, _password: String): Int {
         username = _username
         password = _password

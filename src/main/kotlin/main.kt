@@ -565,6 +565,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     mutableStateOf(0)
                                 }
 
+
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 5.dp),
                                     onClick = {
                                         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
@@ -583,9 +584,11 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                                 when (code) {
                                                     0 -> {
+
                                                         val email = data[1]
                                                         val id = data[2]
                                                         val credential = data[3]
+                                                        val a = auth.manualSignIn(email, credential)
 
                                                         var tryFirebaseAuth = firebaseAuth.authenticate(email, credential)
 
@@ -599,7 +602,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                                                 when (tryFirebaseAuth) {
                                                                     2 -> {
-                                                                        tryFirebaseAuth = 2
+                                                                        tryFirebaseAuth = 0
 
                                                                         false
                                                                     }
@@ -620,6 +623,7 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                         googlePopup = tryFirebaseAuth
 
                                                         ctx.end("Sign in successful! You may return to the testing portal now.")
+                                                        authenticated = true
                                                     }
 
                                                     else -> {
@@ -633,11 +637,13 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                             }.listen("localhost", 8090)
                                         }
 
-                                        authenticated = true
+
                                     }
                                 ) {
                                     Text("Google")
                                 }
+
+                                println(googlePopup)
 
                                 if (googlePopup != 0) {
                                     Window(

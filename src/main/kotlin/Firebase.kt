@@ -78,8 +78,9 @@ class Firebase {
 
             return if (signUpResponse.contains("|()|")) {
                 val ErrorJson = Gson().fromJson(signUpResponse.split("|()|")[2], Error().javaClass)
-
+                println("message:" + ErrorJson.error.message);
                 when (ErrorJson.error.message) {
+
                     "MISSING_EMAIL" -> {
                         0
                     }
