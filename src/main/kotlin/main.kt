@@ -153,24 +153,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
 
-                                Text("First Mini-Competition", fontSize = 20.sp)
-
-                                if (tests.size == 0) {
-                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-                                    eventSequence.forEach {
-                                        tests[it.value] = Test(it.value)
-                                    }
-                                }
-
-                                tests.forEach { (event, _) ->
-                                    TextButton(onClick = {
-                                        currentPage = 3
-                                        test = event
-                                    }) {
-                                        Text(event, color = Color.Black)
-                                    }
-                                }
+//                                Text("First Mini-Competition", fontSize = 20.sp)
+//
+//                                if (tests.size == 0) {
+//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+//                                    eventSequence.forEach {
+//                                        tests[it.value] = Test(it.value)
+//                                    }
+//                                }
+//
+//                                tests.forEach { (event, _) ->
+//                                    TextButton(onClick = {
+//                                        currentPage = 3
+//                                        test = event
+//                                    }) {
+//                                        Text(event, color = Color.Black)
+//                                    }
+//                                }
 
                             }
 
@@ -187,24 +187,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .background(Color(243, 243, 243))
                             ) {
 
-                                Text("First Mini-Competition", fontSize = 20.sp)
-
-                                if (tests.size == 0) {
-                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-                                    eventSequence.forEach {
-                                        tests[it.value] = Test(it.value)
-                                    }
-                                }
-
-                                tests.forEach { (event, _) ->
-                                    TextButton(onClick = {
-                                        currentPage = 3
-                                        test = event
-                                    }) {
-                                        Text(event, color = Color.Black)
-                                    }
-                                }
+//                                Text("First Mini-Competition", fontSize = 20.sp)
+//
+//                                if (tests.size == 0) {
+//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+//                                    eventSequence.forEach {
+//                                        tests[it.value] = Test(it.value)
+//                                    }
+//                                }
+//
+//                                tests.forEach { (event, _) ->
+//                                    TextButton(onClick = {
+//                                        currentPage = 3
+//                                        test = event
+//                                    }) {
+//                                        Text(event, color = Color.Black)
+//                                    }
+//                                }
 
                             }
 
