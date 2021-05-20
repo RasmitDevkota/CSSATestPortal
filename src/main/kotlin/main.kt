@@ -565,7 +565,6 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                     mutableStateOf(0)
                                 }
 
-
                                 Button(modifier = Modifier.align(Alignment.CenterHorizontally).padding(0.dp, 0.dp, 0.dp, 5.dp),
                                     onClick = {
                                         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
@@ -580,50 +579,57 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
 
                                                 println(data)
 
-                                                val code = data[0].toInt()
-
-                                                when (code) {
+                                                when (val code = data[0].toInt()) {
                                                     0 -> {
 
                                                         val email = data[1]
                                                         val id = data[2]
                                                         val credential = data[3]
-                                                        val a = auth.manualSignIn(email, credential)
 
-                                                        var tryFirebaseAuth = firebaseAuth.authenticate(email, credential)
-
-                                                        authenticated = when (tryFirebaseAuth) {
+                                                        when (auth.manualSignIn(email, credential)) {
                                                             0 -> {
-                                                                true
-                                                            }
+                                                                var tryFirebaseAuth = firebaseAuth.authenticate(email, credential)
 
-                                                            6 -> {
-                                                                tryFirebaseAuth = firebaseAuth.create(email, credential)
+                                                                authenticated = when (tryFirebaseAuth) {
+                                                                    0 -> {
+                                                                        true
+                                                                    }
 
-                                                                when (tryFirebaseAuth) {
-                                                                    2 -> {
-                                                                        tryFirebaseAuth = 0
+                                                                    6 -> {
+                                                                        tryFirebaseAuth = firebaseAuth.create(email, credential)
 
-                                                                        false
+                                                                        when (tryFirebaseAuth) {
+                                                                            2 -> {
+                                                                                tryFirebaseAuth = 0
+
+                                                                                false
+                                                                            }
+
+                                                                            else -> {
+                                                                                tryFirebaseAuth = 1
+
+                                                                                false
+                                                                            }
+                                                                        }
                                                                     }
 
                                                                     else -> {
-                                                                        tryFirebaseAuth = 1
-
                                                                         false
                                                                     }
                                                                 }
+
+                                                                googlePopup = tryFirebaseAuth
                                                             }
 
                                                             else -> {
-                                                                false
+                                                                googlePopup = 1
                                                             }
                                                         }
 
-                                                        googlePopup = tryFirebaseAuth
-
                                                         ctx.end("Sign in successful! You may return to the testing portal now.")
-                                                        authenticated = true
+                                                        ctx.close()
+
+                                                        this.cancel()
                                                     }
 
                                                     else -> {
@@ -632,18 +638,18 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                                         googlePopup = code
 
                                                         ctx.end("Sign in failed! Please restart the testing portal and try again!")
+                                                        ctx.close()
+
+                                                        this.cancel()
                                                     }
                                                 }
                                             }.listen("localhost", 8090)
                                         }
 
-
                                     }
                                 ) {
                                     Text("Google")
                                 }
-
-                                println(googlePopup)
 
                                 if (googlePopup != 0) {
                                     Window(
