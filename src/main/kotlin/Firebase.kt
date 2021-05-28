@@ -237,4 +237,10 @@ class Firebase {
             }
         }
     }
+
+    inner class RemoteConfig() {
+        fun get(name: String) {
+            println(http.get("https://firebaseremoteconfig.googleapis.com/v1/{project=projects/cssa-dev}/remoteConfig", token = userToken))
+        }
+    }
 }

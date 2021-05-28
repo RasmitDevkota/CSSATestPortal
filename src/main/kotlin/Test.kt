@@ -58,7 +58,7 @@ class Test(_path: String) {
         val questionsGson = Gson().fromJson(questionsData, QuestionList().javaClass)
 
         questionsGson.documents.forEach {
-            val name = it.name
+            val name = it.name.substringAfterLast("question", (Questions.size + 1).toString()).toInt()
 
             val fieldsRaw = it.fields
             val fields = hashMapOf<String, String>()
@@ -69,7 +69,7 @@ class Test(_path: String) {
             when (stringValue(fields["type"])) {
                 "mcq" -> {
                     val newQuestion = MCQ(
-                        number = name.takeLast(1).toInt(),
+                        number = name,
                         type = stringValue(fields["type"]),
                         text = stringValue(fields["text"]),
                         image = stringValue(fields["image"]),
@@ -77,12 +77,13 @@ class Test(_path: String) {
                         tiebreaker = booleanValue(fields["tiebreaker"]),
                         options = arrayValue(fields["options"])
                     )
+
                     Questions.add(newQuestion)
                 }
 
                 "msq" -> {
                     val newQuestion = MSQ(
-                        number = name.takeLast(1).toInt(),
+                        number = name,
                         type = stringValue(fields["type"]),
                         text = stringValue(fields["text"]),
                         image = stringValue(fields["image"]),
@@ -90,48 +91,52 @@ class Test(_path: String) {
                         tiebreaker = booleanValue(fields["tiebreaker"]),
                         options = arrayValue(fields["options"])
                     )
+
                     Questions.add(newQuestion)
                 }
 
                 "fitb" -> {
                     val newQuestion = FITB(
-                        number = name.takeLast(1).toInt(),
+                        number = name,
                         type = stringValue(fields["type"]),
                         text = stringValue(fields["text"]),
                         image = stringValue(fields["image"]),
                         points = integerValue(fields["value"]),
                         tiebreaker = booleanValue(fields["tiebreaker"])
                     )
+
                     Questions.add(newQuestion)
                 }
 
                 "srq" -> {
                     val newQuestion = SRQ(
-                        number = name.takeLast(1).toInt(),
+                        number = name,
                         type = stringValue(fields["type"]),
                         text = stringValue(fields["text"]),
                         image = stringValue(fields["image"]),
                         points = integerValue(fields["value"]),
                         tiebreaker = booleanValue(fields["tiebreaker"])
                     )
+
                     Questions.add(newQuestion)
                 }
 
                 "lrq" -> {
                     val newQuestion = LRQ(
-                        number = name.takeLast(1).toInt(),
+                        number = name,
                         type = stringValue(fields["type"]),
                         text = stringValue(fields["text"]),
                         image = stringValue(fields["image"]),
                         points = integerValue(fields["value"]),
                         tiebreaker = booleanValue(fields["tiebreaker"])
                     )
+
                     Questions.add(newQuestion)
                 }
 
                 "mq" -> {
                     val newQuestion = MQ(
-                        number = name.takeLast(1).toInt(),
+                        number = name,
                         type = stringValue(fields["type"]),
                         text = stringValue(fields["text"]),
                         image = stringValue(fields["image"]),
@@ -140,10 +145,13 @@ class Test(_path: String) {
                         optionsA = arrayValue(fields["optionsA"]),
                         optionsB = arrayValue(fields["optionsB"]),
                     )
+
                     Questions.add(newQuestion)
                 }
             }
         }
+
+        Questions.sortBy { it.number }
     }
 
     interface Question {
@@ -578,14 +586,11 @@ class Test(_path: String) {
 
             if (active) {
                 Column(Modifier, Arrangement.Center) {
-                    Text(text = "UID: ${firebase.uid} | Time Remaining: $timer", fontSize = 30.sp, textAlign = TextAlign.Center)
+                    Text(text = timer, fontSize = 30.sp, textAlign = TextAlign.Center)
                 }
 
-                Column(// ScrollableColumn(
-//                    scrollState = rememberScrollState(),
-                    modifier = Modifier.fillMaxHeight().border(2.dp, Color.Black).padding(10.dp).scrollable(
-                        ScrollableState { _: Float -> 10.0f }, Orientation.Vertical
-                    ),
+                Column(
+                    modifier = Modifier.fillMaxHeight().border(2.dp, Color.Black).padding(10.dp).verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     Questions.forEach {

@@ -36,14 +36,18 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URI
 import javax.imageio.ImageIO
+import io.github.cdimascio.dotenv.dotenv
 
 var auth = Authentication()
 var firebase = Firebase()
 var firebaseAuth = firebase.Authentication()
 var firestore = firebase.Firestore()
+var remoteConfig = firebase.RemoteConfig()
 var tests = hashMapOf<String, Test>()
 
 var deactivated = true
+
+val dotenv = dotenv()
 
 fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.png"), size = IntSize(1080, 712)) {
     var noUsername by remember {
@@ -61,6 +65,8 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
     var test by remember {
         mutableStateOf("")
     }
+
+    remoteConfig.get("")
 
     MaterialTheme {
         if (authenticated) {
@@ -153,24 +159,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .align(Alignment.CenterHorizontally)
                                 .background(Color(243, 243, 243))) {
 
-//                                Text("First Mini-Competition", fontSize = 20.sp)
-//
-//                                if (tests.size == 0) {
-//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-//                                    eventSequence.forEach {
-//                                        tests[it.value] = Test(it.value)
-//                                    }
-//                                }
-//
-//                                tests.forEach { (event, _) ->
-//                                    TextButton(onClick = {
-//                                        currentPage = 3
-//                                        test = event
-//                                    }) {
-//                                        Text(event, color = Color.Black)
-//                                    }
-//                                }
+                                Text("First Mini-Competition", fontSize = 20.sp)
+
+                                if (tests.size == 0) {
+                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+                                    eventSequence.forEach {
+                                        tests[it.value] = Test(it.value)
+                                    }
+                                }
+
+                                tests.forEach { (event, _) ->
+                                    TextButton(onClick = {
+                                        currentPage = 3
+                                        test = event
+                                    }) {
+                                        Text(event, color = Color.Black)
+                                    }
+                                }
 
                             }
 
@@ -187,24 +193,24 @@ fun main() = Window(title = "CSSA Test Portal", icon = loadImageResource("CSSA.p
                                 .background(Color(243, 243, 243))
                             ) {
 
-//                                Text("First Mini-Competition", fontSize = 20.sp)
-//
-//                                if (tests.size == 0) {
-//                                    val userDocResponse = firestore.get("users/${firebase.uid}")
-//                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
-//                                    eventSequence.forEach {
-//                                        tests[it.value] = Test(it.value)
-//                                    }
-//                                }
-//
-//                                tests.forEach { (event, _) ->
-//                                    TextButton(onClick = {
-//                                        currentPage = 3
-//                                        test = event
-//                                    }) {
-//                                        Text(event, color = Color.Black)
-//                                    }
-//                                }
+                                Text("First Mini-Competition", fontSize = 20.sp)
+
+                                if (tests.size == 0) {
+                                    val userDocResponse = firestore.get("users/${firebase.uid}")
+                                    val eventSequence = Regex("""(?<="event.": \{\n {6}"stringValue": ")(?!None|(.*)!).*(?=")""").findAll(userDocResponse)
+                                    eventSequence.forEach {
+                                        tests[it.value] = Test(it.value)
+                                    }
+                                }
+
+                                tests.forEach { (event, _) ->
+                                    TextButton(onClick = {
+                                        currentPage = 3
+                                        test = event
+                                    }) {
+                                        Text(event, color = Color.Black)
+                                    }
+                                }
 
                             }
 

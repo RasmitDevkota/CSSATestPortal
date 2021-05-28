@@ -10,8 +10,8 @@ class Authentication() {
     var password: String = ""
     var hashedPassword: String = ""
 
-    var clientID = "834594227639-b7pj2rqb1eijd2pbfvice7bp0ndsdp7i.apps.googleusercontent.com"
-    var clientSecret = "KZdxDA3r_gF18eCACoFUdapt"
+    var clientID = dotenv["clientId"]
+    var clientSecret = dotenv["clientSecret"]
     var redirectUri = "https://127.0.0.1:8310/"
     val authUrl = "https://backend.cssa.dev"
 

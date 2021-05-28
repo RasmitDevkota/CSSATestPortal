@@ -28,6 +28,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended-desktop:1.0.0-beta06")
     implementation("androidx.compose.foundation:foundation:1.0.0-beta06")
     implementation("org.slf4j:slf4j-simple:1.6.1")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
 }
 
 tasks.withType<KotlinCompile>() {
