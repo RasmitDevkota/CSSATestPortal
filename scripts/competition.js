@@ -1,3 +1,5 @@
+const competition = "Summer Competition 2021";
+
 let currentEvent = "None";
 let time = 3600;
 
@@ -14,10 +16,12 @@ if (window.location.href.includes("test")) {
 function loadCompetition() {
     userDoc.get().then((doc) => {
         for (let e = 1; e < 5; e++) {
-            if (doc.data()[`event${e}`] != "None" && !doc.data()[`event${e}`].includes("!")) {
+            var eventE = doc.data()[`event${e}`];
+
+            if (eventE != "None" && !eventE.includes("!")) {
                 _("competitions").innerHTML += `
                     <div>
-                        <a onclick="confirmTest('${doc.data()["event" + e]}')">\> ${doc.data()["event" + e]}</a>
+                        → <a onclick="confirmTest('${eventE}')">${eventE}</a>
                     </div>
                 `;
             }
@@ -64,13 +68,13 @@ function loadTest(test) {
                 return window.location.href = "dashboard.html";
             } else if (!["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
                 let data = {};
-    
+
                 let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
-    
+
                 console.log(finishedEvent);
-    
-                data[finishedEvent] = test + "!";
-    
+
+                data[finishedEvent] = test/* + "!"*/;
+
                 userDoc.set(data, { merge: true }).then(() => {
                     console.log(`Successfully locked user in!`);
                 }).catch((e) => {
@@ -89,7 +93,7 @@ function loadTest(test) {
 
     var testContainer = _("test-container");
 
-    tests.doc(test).collection("questions").get().then((querySnapshot) => {
+    tests.doc(test).collection(competition).get().then((querySnapshot) => {
         var docs = [];
 
         querySnapshot.forEach((doc) => {
@@ -97,6 +101,7 @@ function loadTest(test) {
         });
 
         var q = 0;
+
         docs.forEach((doc) => {
             if (q != 0) {
                 testContainer.innerHTML += `<hr>`;
@@ -220,7 +225,6 @@ function loadTest(test) {
                         `;
                     }
 
-
                     question += `
                                 </div>
                             </div>
@@ -279,38 +283,38 @@ function loadTest(test) {
                     testContainer.innerHTML += question;
                     break;
                 default:
-                    alert("An error occurred getting the test! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!");
+                    alert("An error occurred preparing the test! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!");
             }
         });
+
+        if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+            _("details").innerHTML = `UID: ${user.uid} | Deadline: July 31st, 11:59 PM`;
+        } else {
+            userDoc.collection("answers").doc(test).get().then((doc) => {
+                if (doc.exists) {
+                    if (doc.data().time != undefined) {
+                        time -= (new Date()).getTime() - doc.data().time;
+                    }
+                } else {
+                    let startTime = (new Date()).getTime();
+
+                    userDoc.collection("answers").doc(currentEvent).set({
+                        time: startTime
+                    }, { merge: true }).then(() => {
+                        console.log(startTime);
+                    }).catch((e) => {
+                        console.error(e);
+                    });
+                }
+            });
+
+            setTimeout(() => {
+                timer();
+            }, 1000);
+        }
     }).catch((error) => {
         console.error(error);
     });
-
-    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-        _("details").innerHTML = `UID: ${user.uid} | Deadline: March 31st, 11:59 PM`;
-    } else {
-        userDoc.collection("answers").doc(test).get().then((doc) => {
-            if (doc.exists) {
-                if (doc.data().time != undefined) {
-                    time -= (new Date()).getTime() - doc.data().time;
-                }
-            } else {
-                let startTime = (new Date()).getTime();
-
-                userDoc.collection("answers").doc(currentEvent).set({
-                    time: startTime
-                }, { merge: true }).then(() => {
-                    console.log(startTime);
-                }).catch((e) => {
-                    console.error(e);
-                });
-            }
-        });
-
-        setTimeout(() => {
-            timer();
-        }, 1000);
-    }
 }
 
 function timer() {
@@ -334,6 +338,10 @@ function timer() {
     }
 }
 
+// function loadAnswers() {
+//     tests.
+// }
+
 var saved = false;
 var saveTimestamp = 0;
 
@@ -348,7 +356,7 @@ function answer(id, answer) {
         }
 
         answerList[id.split("optionA")[1]] = answer;
-        
+
         answers.set(id.substr(0, id.indexOf("-")), answerList);
     } else if (id.includes("moption")) {
         var answerlist;
@@ -394,7 +402,6 @@ function saveAnswers(finished = false) {
 
             window.location.href = "dashboard.html";
         } else {
-
             saved = true;
             saveTimestamp = (new Date()).getTime();
 

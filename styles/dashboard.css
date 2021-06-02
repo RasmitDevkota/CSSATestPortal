@@ -67,11 +67,11 @@
 }
 
 #competitions > div > a {
-    line-height: 144%;
     color: #172435;
     text-decoration: none;
 }
 
 #competitions a:hover {
+    cursor: pointer;
     text-decoration: underline;
 }
