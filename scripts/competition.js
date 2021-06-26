@@ -14,29 +14,31 @@ if (window.location.href.includes("test")) {
 }
 
 function loadCompetition() {
-    userDoc.get().then((doc) => {
-        for (let e = 1; e < 5; e++) {
-            var eventE = doc.data()[`event${e}`];
+    if ((new Date()).getMonth == 6) {
+        userDoc.get().then((doc) => {
+            for (let e = 1; e < 5; e++) {
+                var eventE = doc.data()[`event${e}`];
 
-            if (eventE != "None" && !eventE.includes("!")) {
-                _("competitions").innerHTML += `
+                if (eventE != "None" && !eventE.includes("!")) {
+                    _("competitions").innerHTML += `
                     <div>
                         → <a onclick="confirmTest('${eventE}')">${eventE}</a>
                     </div>
                 `;
+                }
             }
-        }
 
-        if (doc.data()[`ctf`] != undefined) {
-            if (doc.data()[`ctf`] == true) {
-                _("competitions").innerHTML += `
+            if (doc.data()[`ctf`] != undefined) {
+                if (doc.data()[`ctf`] == true) {
+                    _("competitions").innerHTML += `
                     <div>
                         <a onclick="confirmTest('CTFSubmissions')">\> CTF Submissions</a>
                     </div>
                 `;
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 function confirmTest(event) {
