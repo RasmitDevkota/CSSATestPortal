@@ -14,7 +14,10 @@ if (window.location.href.includes("test")) {
 }
 
 function loadCompetition() {
-    if ((new Date()).getMonth == 6) {
+    const localTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
+    const estMonth = Number(localTime.split("/")[0]);
+
+    if (estMonth == 7) {
         userDoc.get().then((doc) => {
             for (let e = 1; e < 5; e++) {
                 var eventE = doc.data()[`event${e}`];
