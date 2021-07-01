@@ -298,7 +298,7 @@ function loadTest(test) {
             if (answersDoc.exists && ["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
                 console.log("2");
 
-                _("details").innerHTML = `UID: ${user.uid} | Deadline: July 31st, 11:59 PM`;
+                _("details").innerHTML = `UID: ${user.uid} | Deadline: July ${ test == "Capture The Flag" ? "16th" : "31st" }, 11:59 PM`;
 
                 console.log(Object.keys(answersDoc.data()).length);
 
