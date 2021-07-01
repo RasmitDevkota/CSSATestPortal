@@ -45,7 +45,7 @@ function loadCompetition() {
 }
 
 function confirmTest(event) {
-    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(event)) {
+    if (["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(event)) {
         window.location.href = `test.html?test=${event}`;
     } else if (confirm("Are you sure you want to begin this event? Once you start, the timer will start and you won't be able to pause or come back later!")) {
         window.location.href = `test.html?test=${event}`;
@@ -55,7 +55,7 @@ function confirmTest(event) {
 var answers = new Map();
 
 function loadTest(test) {
-    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+    if (["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
         _("submit-row").style.display = "none";
     }
 
@@ -71,7 +71,7 @@ function loadTest(test) {
                 alert("Sorry, you don't have this event!");
 
                 return window.location.href = "dashboard.html";
-            } else if (!["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+            } else if (!["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
                 let data = {};
 
                 let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
@@ -295,7 +295,7 @@ function loadTest(test) {
         userDoc.collection("answers").doc(test).get().then((answersDoc) => {
             console.log("1");
 
-            if (answersDoc.exists && ["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+            if (answersDoc.exists && ["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
                 console.log("2");
 
                 _("details").innerHTML = `UID: ${user.uid} | Deadline: July 31st, 11:59 PM`;
@@ -430,7 +430,7 @@ function manualSave() {
 }
 
 function submit(confirmed = false) {
-    if (!confirmed || ["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
+    if (!confirmed || ["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
         if (!confirm("Are you sure you want to submit the test? You won't be able to access it again!")) {
             return;
         }
@@ -442,7 +442,7 @@ function submit(confirmed = false) {
 }
 
 function testRedirect(dest) {
-    if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
+    if (["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
         submit(true);
 
         if (dest == "dashboard") {
