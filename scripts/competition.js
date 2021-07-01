@@ -78,7 +78,7 @@ function loadTest(test) {
 
                 console.log(finishedEvent);
 
-                data[finishedEvent] = test + "!"*/;
+                data[finishedEvent] = test + "!";
 
                 userDoc.set(data, { merge: true }).then(() => {
                     console.log(`Successfully locked user in!`);
