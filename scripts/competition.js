@@ -290,34 +290,32 @@ function loadTest(test) {
                 default:
                     alert("An error occurred preparing the test! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!");
             }
-        }).then(() => {
-            if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+        });
+    }).then(() => {
+        userDoc.collection("answers").doc(test).get().then((answersDoc) => {
+            console.log("1");
+
+            if (answersDoc.exists && ["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+                console.log("2");
+
                 _("details").innerHTML = `UID: ${user.uid} | Deadline: July 31st, 11:59 PM`;
+
+                console.log(Object.keys(answersDoc.data()).length);
+
+                for (var a = 0; a < Object.keys(answersDoc.data()).length; a++) {
+                    console.log(a);
+
+                    document.getElementById(`question${a + 1}-response`).value = answersDoc.data()[`question${a + 1}`];
+                }
             } else {
-                userDoc.collection("answers").doc(test).get().then((doc) => {
-                    if (doc.exists) {
-                        if (doc.data().time != undefined) {
-                            time -= (new Date()).getTime() - doc.data().time;
-                        }
+                let startTime = (new Date()).getTime();
 
-                        if (time < 0) {
-                            timer();
-                        } else {
-                            for (a in Object.keys(doc.data()).length) {
-                                document.getElementById(`${a}-response`).value = doc.data()[`question${a}`];
-                            }
-                        }
-                    } else {
-                        let startTime = (new Date()).getTime();
-
-                        userDoc.collection("answers").doc(currentEvent).set({
-                            time: startTime
-                        }, { merge: true }).then(() => {
-                            console.log(startTime);
-                        }).catch((e) => {
-                            console.error(e);
-                        });
-                    }
+                userDoc.collection("answers").doc(currentEvent).set({
+                    time: startTime
+                }, { merge: true }).then(() => {
+                    console.log(startTime);
+                }).catch((e) => {
+                    console.error(e);
                 });
 
                 setTimeout(() => {
