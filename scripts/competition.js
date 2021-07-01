@@ -304,7 +304,7 @@ function loadTest(test) {
                     if (time < 0) {
                         timer();
                     } else {
-                        for (a in doc.data()) {
+                        for (a in Object.keys(doc.data()).length) {
                             document.getElementById(`${a}-response`).value = doc.data()[`question${a}`];
                         }
                     }
