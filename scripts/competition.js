@@ -304,10 +304,8 @@ function loadTest(test) {
                     if (time < 0) {
                         timer();
                     } else {
-                        for (answer of doc.data()) {
-                            var qNum = answer.split("question")[1];
-
-                            document.getElementById(`${qNum}-response`).value = answer;
+                        for (a in doc.data()) {
+                            document.getElementById(`${a}-response`).value = doc.data()[`question${A}`];
                         }
                     }
                 } else {
