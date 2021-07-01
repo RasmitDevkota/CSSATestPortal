@@ -290,41 +290,41 @@ function loadTest(test) {
                 default:
                     alert("An error occurred preparing the test! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!");
             }
-        });
-
-        if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-            _("details").innerHTML = `UID: ${user.uid} | Deadline: July 31st, 11:59 PM`;
-        } else {
-            userDoc.collection("answers").doc(test).get().then((doc) => {
-                if (doc.exists) {
-                    if (doc.data().time != undefined) {
-                        time -= (new Date()).getTime() - doc.data().time;
-                    }
-
-                    if (time < 0) {
-                        timer();
-                    } else {
-                        for (a in Object.keys(doc.data()).length) {
-                            document.getElementById(`${a}-response`).value = doc.data()[`question${a}`];
+        }).then(() => {
+            if (["Capture the Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
+                _("details").innerHTML = `UID: ${user.uid} | Deadline: July 31st, 11:59 PM`;
+            } else {
+                userDoc.collection("answers").doc(test).get().then((doc) => {
+                    if (doc.exists) {
+                        if (doc.data().time != undefined) {
+                            time -= (new Date()).getTime() - doc.data().time;
                         }
+
+                        if (time < 0) {
+                            timer();
+                        } else {
+                            for (a in Object.keys(doc.data()).length) {
+                                document.getElementById(`${a}-response`).value = doc.data()[`question${a}`];
+                            }
+                        }
+                    } else {
+                        let startTime = (new Date()).getTime();
+
+                        userDoc.collection("answers").doc(currentEvent).set({
+                            time: startTime
+                        }, { merge: true }).then(() => {
+                            console.log(startTime);
+                        }).catch((e) => {
+                            console.error(e);
+                        });
                     }
-                } else {
-                    let startTime = (new Date()).getTime();
+                });
 
-                    userDoc.collection("answers").doc(currentEvent).set({
-                        time: startTime
-                    }, { merge: true }).then(() => {
-                        console.log(startTime);
-                    }).catch((e) => {
-                        console.error(e);
-                    });
-                }
-            });
-
-            setTimeout(() => {
-                timer();
-            }, 1000);
-        }
+                setTimeout(() => {
+                    timer();
+                }, 1000);
+            }
+        });
     }).catch((error) => {
         console.error(error);
     });
