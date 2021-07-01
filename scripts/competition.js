@@ -78,7 +78,7 @@ function loadTest(test) {
 
                 console.log(finishedEvent);
 
-                data[finishedEvent] = test/* + "!"*/;
+                data[finishedEvent] = test + "!"*/;
 
                 userDoc.set(data, { merge: true }).then(() => {
                     console.log(`Successfully locked user in!`);
@@ -300,6 +300,16 @@ function loadTest(test) {
                     if (doc.data().time != undefined) {
                         time -= (new Date()).getTime() - doc.data().time;
                     }
+
+                    if (time < 0) {
+                        timer();
+                    } else {
+                        for (answer of doc.data()) {
+                            var qNum = answer.split("question")[1];
+
+                            document.getElementById(`${qNum}-response`).value = answer;
+                        }
+                    }
                 } else {
                     let startTime = (new Date()).getTime();
 
@@ -342,10 +352,6 @@ function timer() {
         return setTimeout(timer, 1000);
     }
 }
-
-// function loadAnswers() {
-//     tests.
-// }
 
 var saved = false;
 var saveTimestamp = 0;
