@@ -30,7 +30,7 @@ function pageLoad(u) {
         window.user = firebase.auth().currentUser;
 
         if (!user) {
-            console.error("Auth error occurred, pageLoad(true) called even though firebase.auth().currentUser is " + user);
+            cssalog("Auth error occurred, pageLoad(true) called even though firebase.auth().currentUser is " + user, "Event=False Auth State Change");
 
             pageLoad(false);
         }
@@ -66,25 +66,49 @@ function display(id) {
 
 function setCookie(name,value,days) {
     var expires = "";
+
     if (days) {
         var date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
+
     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
 
 function getCookie(name) {
     var nameEQ = name + "=";
+
     var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
+
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0)==' ') c = c.substring(1,c.length);
+
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
+
     return null;
 }
 
 function eraseCookie(name) {   
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function cssalog(msg, log = "") {
+    try {
+        var details = "";
+
+        if (log == "" || log == "<~") {
+            details = `Message=${msg.replace(/ /g, "__")}`;
+        } else {
+            details = log.replace(/<~/g, msg).replace(/ /g, "__");
+        }
+
+        fetch(`https://cssa-discord-bot.dralientech.repl.co/log?${details}`);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        console.log(msg);
+    }
 }

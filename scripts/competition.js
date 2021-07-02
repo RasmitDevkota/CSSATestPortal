@@ -60,8 +60,6 @@ function loadTest(test) {
     }
 
     userDoc.get().then((doc) => {
-        console.log(doc.data());
-
         if (test != "CTFSubmissions") {
             if (Object.values(doc.data()).includes(test + "!")) {
                 alert("Sorry, you already finished this test!");
@@ -76,14 +74,12 @@ function loadTest(test) {
 
                 let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
 
-                console.log(finishedEvent);
-
                 data[finishedEvent] = test + "!";
 
                 userDoc.set(data, { merge: true }).then(() => {
-                    console.log(`Successfully locked user in!`);
+                    cssalog(`Successfully locked user in!`, `Event=User locked into test&UID=${user.uid}&Event=${test}`);
                 }).catch((e) => {
-                    console.error(e);
+                    cssalog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${user.uid}&Event=${test}`);
         
                     alert("Error occurred accessing database, please refresh the page and try again!");
                 });
@@ -293,18 +289,10 @@ function loadTest(test) {
         });
     }).then(() => {
         userDoc.collection("answers").doc(test).get().then((answersDoc) => {
-            console.log("1");
-
             if (answersDoc.exists && ["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-                console.log("2");
-
                 _("details").innerHTML = `UID: ${user.uid} | Deadline: July ${ test == "Capture The Flag" ? "16th" : "31st" }, 11:59 PM`;
 
-                console.log(Object.keys(answersDoc.data()).length);
-
                 for (var a = 0; a < Object.keys(answersDoc.data()).length; a++) {
-                    console.log(a);
-
                     document.getElementById(`question${a + 1}-response`).value = answersDoc.data()[`question${a + 1}`];
                 }
             } else {
@@ -312,10 +300,8 @@ function loadTest(test) {
 
                 userDoc.collection("answers").doc(currentEvent).set({
                     time: startTime
-                }, { merge: true }).then(() => {
-                    console.log(startTime);
-                }).catch((e) => {
-                    console.error(e);
+                }, { merge: true }).catch((e) => {
+                    cssalog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${user.uid}&Event=${test}`);
                 });
 
                 setTimeout(() => {
@@ -324,7 +310,7 @@ function loadTest(test) {
             }
         });
     }).catch((error) => {
-        console.error(error);
+        cssalog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${user.uid}&Event=${test}`);
     });
 }
 
@@ -385,8 +371,6 @@ function answer(id, answer) {
         answers.set(id.substr(0, id.indexOf("-")), answer);
     }
 
-    console.log(answers);
-
     saved = false;
 
     _("saveStatus").innerHTML = `Not Saved | <a onclick="manualSave()">Save</a>`;
@@ -400,7 +384,7 @@ function saveAnswers(finished = false) {
     });
 
     userDoc.collection("answers").doc(currentEvent).set(data, { merge: true }).then(() => {
-        console.log(`Saved ${currentEvent} answers`);
+        cssalog(`Saved ${currentEvent} answers`, `Event=<~&UID=${user.uid}&Event=${test}`);
 
         if (finished) {
             alert(`Successfully submitted the test!`);
@@ -415,7 +399,7 @@ function saveAnswers(finished = false) {
             _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
         }
     }).catch((e) => {
-        console.error(e);
+        cssalog(`Error occurred saving ${currentEvent} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
 
         alert("Error occurred saving answers, please refresh the page and try again!");
     });
@@ -438,7 +422,7 @@ function submit(confirmed = false) {
 
     saveAnswers(true);
 
-    console.log(`Submitted ${currentEvent} answers`);
+    cssalog(`Submitted ${currentEvent} answers`, `Event=Submitted answers&UID=${user.uid}&Event=${currentEvent}`);
 }
 
 function testRedirect(dest) {
