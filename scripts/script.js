@@ -105,7 +105,9 @@ function cssalog(msg, log = "") {
             details = log.replace(/<~/g, msg).replace(/ /g, "__");
         }
 
-        fetch(`https://cssa-discord-bot.dralientech.repl.co/log?${details}`);
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", `https://cssa-discord-bot.dralientech.repl.co/log?${details}`, true);
+        xhttp.send();
     } catch (error) {
         console.error(error);
     } finally {

@@ -301,7 +301,7 @@ function loadTest(test) {
                 userDoc.collection("answers").doc(currentEvent).set({
                     time: startTime
                 }, { merge: true }).catch((e) => {
-                    cssalog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${user.uid}&Event=${test}`);
+                    cssalog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
                 });
 
                 setTimeout(() => {
@@ -384,7 +384,7 @@ function saveAnswers(finished = false) {
     });
 
     userDoc.collection("answers").doc(currentEvent).set(data, { merge: true }).then(() => {
-        cssalog(`Saved ${currentEvent} answers`, `Event=<~&UID=${user.uid}&Event=${test}`);
+        cssalog(`Saved ${currentEvent} answers`, `Event=Saved answers&UID=${user.uid}&Event=${currentEvent}`);
 
         if (finished) {
             alert(`Successfully submitted the test!`);
