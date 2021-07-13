@@ -24,20 +24,38 @@ function loadCompetition() {
 
                 if (eventE != "None" && !eventE.includes("!")) {
                     _("competitions").innerHTML += `
-                    <div>
-                        → <a onclick="confirmTest('${eventE}')">${eventE}</a>
-                    </div>
-                `;
+                        <div>
+                            → <a onclick="confirmTest('${eventE}')">${eventE}</a>
+                        </div>
+                    `;
                 }
             }
 
             if (doc.data()[`ctf`] != undefined) {
                 if (doc.data()[`ctf`] == true) {
                     _("competitions").innerHTML += `
-                    <div>
-                        <a onclick="confirmTest('CTFSubmissions')">\> CTF Submissions</a>
-                    </div>
-                `;
+                        <div>
+                            <a onclick="confirmTest('CTFSubmissions')">\> CTF Submissions</a>
+                        </div>
+                    `;
+                }
+            }
+        });
+    }
+}
+
+function loadProctoring() {
+    if (userDoc.isProctor) {
+        userDoc.get().then((doc) => {
+            for (let e = 1; e <= 14; e++) {
+                var eventE = doc.data()[`proctoringEvent${e}`];
+
+                if (eventE) {
+                    _("competitions").innerHTML += `
+                        <div>
+                            → <a onclick="loadProctorMenu('${eventE}')">${eventE}</a>
+                        </div>
+                    `;
                 }
             }
         });

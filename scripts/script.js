@@ -43,6 +43,10 @@ function pageLoad(u) {
             _("welcome-user").innerHTML = `Welcome, ${getCookie("username")}!`;
 
             loadCompetition();
+
+            if (userDoc.isProctor) {
+                loadProctoring();
+            }
         } else if (window.location.href.includes("test.html")) {
             var urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             var test = urlParams.get('test');

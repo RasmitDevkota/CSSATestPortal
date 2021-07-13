@@ -45,7 +45,7 @@
     margin-top: 5%;
 }
 
-#competitions {
+#competitions, #proctoring {
     width: 40%;
     height: min-content;
     margin-top: 2.1%;
@@ -53,25 +53,25 @@
     background-color: #b5dfff;
 }
 
-#competitions h2 {
+.dashboard-row h2 {
     margin: 0%;
     font-size: 1.5vw;
 }
 
-#competitions h4 {
+.dashboard-row h4 {
     margin: 0% 0% 0% 0.5%;
 }
 
-#competitions > div {
+.dashboard-row > div {
     margin: 0% 0% 1.5% 2%;
 }
 
-#competitions > div > a {
+.dashboard-row > div > div > a {
     color: #172435;
     text-decoration: none;
 }
 
-#competitions a:hover {
+.dashboard-row > div a:hover {
     cursor: pointer;
     text-decoration: underline;
 }
